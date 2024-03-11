@@ -12,6 +12,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Game.Functions", "Game.Functions\Game.Functions.csproj", "{AAC3B32D-0921-4D38-AD12-64E66B13EBFA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Game.Storage", "Game.Storage\Game.Storage.csproj", "{E6E2509E-C5D3-4637-8F65-7B9C89640932}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +30,14 @@ Global
 		{2068022D-3F2C-454B-8863-BC70CC88DA08}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2068022D-3F2C-454B-8863-BC70CC88DA08}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2068022D-3F2C-454B-8863-BC70CC88DA08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAC3B32D-0921-4D38-AD12-64E66B13EBFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAC3B32D-0921-4D38-AD12-64E66B13EBFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAC3B32D-0921-4D38-AD12-64E66B13EBFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAC3B32D-0921-4D38-AD12-64E66B13EBFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6E2509E-C5D3-4637-8F65-7B9C89640932}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6E2509E-C5D3-4637-8F65-7B9C89640932}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6E2509E-C5D3-4637-8F65-7B9C89640932}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6E2509E-C5D3-4637-8F65-7B9C89640932}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

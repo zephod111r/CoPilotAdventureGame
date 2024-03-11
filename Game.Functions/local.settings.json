@@ -1,0 +1,7 @@
+{
+    "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=copilotadvgamestorage;AccountKey=Se61VrF+Y0rZpP/PnZgYQwCIaBt4/SDFjJ3B6wiy8235LaH1ITK+CMxqrD4F/moriGqHp8ZfTyxe+ASt1Ad4yQ==;EndpointSuffix=core.windows.net",
+    "AzureWebJobsDashboard": "DefaultEndpointsProtocol=https;AccountName=copilotadvgamestorage;AccountKey=Se61VrF+Y0rZpP/PnZgYQwCIaBt4/SDFjJ3B6wiy8235LaH1ITK+CMxqrD4F/moriGqHp8ZfTyxe+ASt1Ad4yQ==;EndpointSuffix=core.windows.net"
+  }
+}
