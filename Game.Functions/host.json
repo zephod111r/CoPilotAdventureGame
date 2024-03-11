@@ -1,7 +1,2 @@
 {
-  "IsEncrypted": false,
-  "Values": {
-    "AzureWebJobsStorage": "AzureWebJobsStorage",
-    "AzureWebJobsDashboard": "AzureWebJobsStorage"
-  }
 }

@@ -2,34 +2,45 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http.HttpResults;
+using System.Net.Mime;
 
 namespace Game.Functions
 {
-    public static class ParseDocument
+    public class ParseDocument
     {
-        [FunctionName("ParseDocument")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]HttpRequestMessage req, TraceWriter log)
+        private readonly ILogger _logger;
+
+        public ParseDocument(ILogger<ParseDocument> logger)
         {
-            log.Info("C# HTTP trigger function processed a request.");
+            _logger = logger;
+        }
+
+        [Function("ParseDocument")]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req)
+        {
+            _logger.LogInformation("C# HTTP trigger function processed a request.");
 
             // parse query parameter
-            string name = req.GetQueryNameValuePairs()
-                .FirstOrDefault(q => string.Compare(q.Key, "name", true) == 0)
-                .Value;
+            string name = req.Query["name"];
 
             if (name == null)
             {
                 // Get request body
-                dynamic data = await req.Content.ReadAsAsync<object>();
+                dynamic data = await req.ReadFromJsonAsync<object>();
                 name = data?.name;
             }
 
-            return name == null
-                ? req.CreateResponse(HttpStatusCode.BadRequest, "Please pass a name on the query string or in the request body")
-                : req.CreateResponse(HttpStatusCode.OK, "Hello " + name);
+            return (name == null) 
+            ? new BadRequestObjectResult("Invalid name, you can pass a name through a query or body of your request")
+            : new OkObjectResult("Hello " + name);
         }
     }
 }
