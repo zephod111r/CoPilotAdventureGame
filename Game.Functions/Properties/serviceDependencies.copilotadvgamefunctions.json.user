@@ -1,0 +1,34 @@
+{
+  "dependencies": {
+    "storage1": {
+      "restored": true,
+      "restoreTime": "2024-03-11T15:40:55.2463258Z"
+    },
+    "appInsights1": {
+      "restored": true,
+      "restoreTime": "2024-03-11T15:40:53.9063436Z"
+    }
+  },
+  "parameters": {
+    "appInsights1.resourceGroupName": {
+      "Name": "appInsights1.resourceGroupName",
+      "Type": "resourceGroup",
+      "Value": "copilotadventuregame"
+    },
+    "storage1.resourceGroupName": {
+      "Name": "storage1.resourceGroupName",
+      "Type": "resourceGroup",
+      "Value": "copilotadventuregame"
+    },
+    "storage1.subscriptionId": {
+      "Name": "storage1.subscriptionId",
+      "Type": "subscription",
+      "Value": "55349166-0eee-4b4a-bbc1-d94b8a6cb737"
+    },
+    "appInsights1.subscriptionId": {
+      "Name": "appInsights1.subscriptionId",
+      "Type": "subscription",
+      "Value": "55349166-0eee-4b4a-bbc1-d94b8a6cb737"
+    }
+  }
+}
