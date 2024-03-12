@@ -1,13 +1,9 @@
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Microsoft.Azure.Functions.Worker;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Logging;
 using System.Net.Mime;
+using System.Threading.Tasks;
 
 namespace Game.Functions
 {
