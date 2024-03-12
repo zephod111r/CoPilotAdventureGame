@@ -12,9 +12,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Game.Functions", "Game.Functions\Game.Functions.csproj", "{AAC3B32D-0921-4D38-AD12-64E66B13EBFA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Game.Functions", "Game.Functions\Game.Functions.csproj", "{AAC3B32D-0921-4D38-AD12-64E66B13EBFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Game.Storage", "Game.Storage\Game.Storage.csproj", "{E6E2509E-C5D3-4637-8F65-7B9C89640932}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Game.Storage", "Game.Storage\Game.Storage.csproj", "{E6E2509E-C5D3-4637-8F65-7B9C89640932}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Game.RuleBook", "Game.RuleBook\Game.RuleBook.csproj", "{61F5EAFD-2693-4B3B-A3CE-9DDCA5694E06}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Game.AI.OpenAI", "Game.AI\Game.AI.OpenAI.csproj", "{4C01E881-0552-41BE-AA19-6F52DC574BD2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +42,14 @@ Global
 		{E6E2509E-C5D3-4637-8F65-7B9C89640932}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6E2509E-C5D3-4637-8F65-7B9C89640932}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E6E2509E-C5D3-4637-8F65-7B9C89640932}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61F5EAFD-2693-4B3B-A3CE-9DDCA5694E06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61F5EAFD-2693-4B3B-A3CE-9DDCA5694E06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61F5EAFD-2693-4B3B-A3CE-9DDCA5694E06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61F5EAFD-2693-4B3B-A3CE-9DDCA5694E06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C01E881-0552-41BE-AA19-6F52DC574BD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C01E881-0552-41BE-AA19-6F52DC574BD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C01E881-0552-41BE-AA19-6F52DC574BD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C01E881-0552-41BE-AA19-6F52DC574BD2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
