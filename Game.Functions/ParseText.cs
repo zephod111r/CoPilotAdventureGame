@@ -1,42 +1,32 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Extensions.Logging;
-using System.Net.Mime;
+using Microsoft.Azure.Functions.Worker.Http;
 using System.Threading.Tasks;
 
 namespace Game.Functions
 {
-    public class ParseText
+    public static class ParseText
     {
-        private readonly ILogger _logger;
-
-        public ParseText(ILogger<ParseText> logger)
+        [Function(nameof(ParseText))]
+        public static async Task<HttpResponseData> Run(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequestData req,
+            FunctionContext executionContext)
         {
-            _logger = logger;
-        }
-
-        [Function("ParseText")]
-        [Consumes(MediaTypeNames.Application.Json)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req)
-        {
-            _logger.LogInformation("C# HTTP trigger function processed a request.");
-
             // parse query parameter
             string name = req.Query["name"];
 
+            HttpResponseData res = null;
             if (name == null)
             {
-                // Get request body
-                dynamic data = await req.ReadFromJsonAsync<object>();
-                name = data?.name;
+                res = req.CreateResponse(System.Net.HttpStatusCode.BadRequest);
+                res.WriteString("Invalid name, you can pass a name through a query or body of your request");
+            }
+            else
+            {
+                res = req.CreateResponse(System.Net.HttpStatusCode.OK);
+                res.WriteString("Hello " + name);
             }
 
-            return (name == null)
-            ? new BadRequestObjectResult("Invalid name, you can pass a name through a query or body of your request")
-            : new OkObjectResult("Hello " + name);
+            return res;
         }
     }
 }
