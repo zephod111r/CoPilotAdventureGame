@@ -1,19 +1,25 @@
 ﻿using Game.Common.Configuration;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
-namespace Game.Console
+namespace Game.TextUI
 {
     public class LocalJsonConfiguration : IAppConfiguration
     {
+        private readonly ILogger<LocalJsonConfiguration> logger;
         private readonly IConfigurationSection configuration;
 
-        public LocalJsonConfiguration()
+        public LocalJsonConfiguration(ILogger<LocalJsonConfiguration> logger)
         {
+            this.logger = logger;
+
             var environmentName = "local";
+
+            logger.LogDebug("Environment.ProcessPath: {0}", Environment.ProcessPath);
 
             var builder = new ConfigurationBuilder()
                 // get paranet fodler of Environment.ProcessPath
-                .SetBasePath(Directory.GetParent(Environment.ProcessPath).FullName)
+                .SetBasePath(Directory.GetParent(Environment.ProcessPath!)!.FullName)
                 .AddJsonFile("settings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"{environmentName}.settings.json", optional: true, reloadOnChange: true);
 
@@ -23,6 +29,7 @@ namespace Game.Console
 
         public string? Get(ConfigurationParameter key)
         {
+            logger.LogDebug("Getting configuration for {0}", key);
             return configuration[key.ToString()];
         }
     }

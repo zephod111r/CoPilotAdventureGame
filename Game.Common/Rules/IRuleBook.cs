@@ -1,10 +1,14 @@
-﻿using Game.RuleBook.Character;
+﻿using Game.Common.Character;
+using Game.RuleBook.Character;
 
 namespace Game.Common.Rules
 {
     public interface IRuleBook
     {
-        List<NameDescription> GetRaces();
-        List<NameDescription> GetClasses(string race);
+        Task<NameDescription[]> GetRaces();
+        Task<NameDescription[]> GetClasses(string race);
+        Task<PlayerCharacter> CreateCharacter(NameDescription race, NameDescription clasz);
+        Task<GameMap> CreateMap(int width, int height);
+        Task<string> GetGameMasterName();
     }
 }

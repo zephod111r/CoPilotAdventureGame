@@ -2,11 +2,15 @@
 {
     public class AIRequest
     {
+        public string Context { get; private set; }
         public string Query { get; private set; }
+        public string Format { get; private set; }
 
-        public AIRequest(string query)
+        public AIRequest(string context, string query, string format)
         {
+            Context = context;
             Query = query;
+            Format = format;
         }
     }
 
@@ -22,6 +26,6 @@
 
     public interface IAIPlatform
     {
-        public AIResponse Query(AIRequest request);
+        public Task<AIResponse> Query(AIRequest request);
     }
 }

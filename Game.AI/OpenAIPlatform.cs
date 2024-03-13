@@ -17,41 +17,39 @@ namespace Game.AI.OpenAI
             this.logger = logger;
 
             // Initialize OpenAI
-            this.logger.LogDebug($"Initializing OpenAI");
+            this.logger.LogDebug("Initializing OpenAI");
             client = new OpenAIClient(configuration.Get(ConfigurationParameter.OpenAIKey));
         }
 
-        public AIResponse Query(AIRequest request)
+        public async Task<AIResponse> Query(AIRequest request)
         {
             var chatCompletionsOptions = new ChatCompletionsOptions()
             {
                 DeploymentName = MODEL_NAME, // Use DeploymentName for "model" with non-Azure clients
                 Messages =
                 {
-                    new ChatRequestSystemMessage("You are a game master of Dungeons&Dragons game."),
+                    new ChatRequestSystemMessage(request.Context),
                     new ChatRequestUserMessage(request.Query),
+                    new ChatRequestUserMessage($"Output format is {request.Format}"),
                 }
             };
 
-            return Task.Run(async () =>
+            return await Task.Run(() =>
             {
                 StringBuilder responseContent = new StringBuilder();
 
-                await foreach (StreamingChatCompletionsUpdate chatUpdate in client.GetChatCompletionsStreaming(chatCompletionsOptions))
+                foreach (ChatChoice chatUpdate in client.GetChatCompletions(chatCompletionsOptions).Value.Choices)
                 {
-                    if (!string.IsNullOrEmpty(chatUpdate.ContentUpdate))
+                    if (!string.IsNullOrEmpty(chatUpdate.Message.Content))
                     {
-                        responseContent.AppendLine(chatUpdate.ContentUpdate);
+                        responseContent.AppendLine(chatUpdate.Message.Content);
                     }
                 }
 
-                // remove new lines 
-                string jsonResponse = responseContent.Replace("\n", "").Replace("\r", "").ToString();
-                logger.LogDebug($"OpenAI response: {jsonResponse}");
+                logger.LogTrace($"OpenAI response:\n{responseContent}");
 
-                AIResponse response = new AIResponse(jsonResponse);
-                return response;
-            }).GetAwaiter().GetResult();
+                return new AIResponse(responseContent.ToString());
+            });
         }
     }
 }
