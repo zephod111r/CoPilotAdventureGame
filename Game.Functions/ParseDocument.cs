@@ -8,7 +8,7 @@ namespace Game.Functions
     {
         [Function(nameof(ParseDocument))]
         public static async Task<HttpResponseData> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequestData req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = nameof(ParseDocument))] HttpRequestData req,
             FunctionContext executionContext)
         {
             // parse query parameter
