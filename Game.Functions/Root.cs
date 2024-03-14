@@ -30,7 +30,6 @@ namespace Game.Functions
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "/")] HttpRequestData req,
             ExecutionContext context)
         {
-            var response = req.CreateResponse(HttpStatusCode.OK);
 
             if(nameOfRoot == null)
             {
@@ -39,10 +38,22 @@ namespace Game.Functions
 
             string path = string.Concat(@nameOfRoot, @"\index.html");
 
-            FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read);
-            response.Body = stream;
-            response.Headers.Add("content-type", "text/html");
-            return response;
+            try
+            {
+
+                FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read);
+                var response = req.CreateResponse(HttpStatusCode.OK);
+                response.Body = stream;
+                response.Headers.Add("content-type", "text/html");
+                return response;
+            }
+            catch(Exception ex)
+            {
+                var response = req.CreateResponse(HttpStatusCode.InternalServerError);
+                response.WriteString(ex.Message);
+                response.Headers.Add("content-type", "text/plain");
+                return response;
+            }
         }
     }
 }
