@@ -11,10 +11,12 @@ namespace Game.TextUI
         private readonly IUserInterfaceManager userInterfaceManager = userInterfaceManager;
         private readonly IGameMaster gameMaster = gameMaster;
 
-        public void Start()
+        public override async Task<string> Start()
         {
-            gameMaster.StartGame();
+            // string welcomeMessage = ruleBook.GetWelcomeMessage();
 
+            await gameMaster.StartGame();
+            await gameMaster.AnnounceLocation(0);
             while (true)
             {
                 // Game loop
@@ -24,7 +26,7 @@ namespace Game.TextUI
                     break;
                 }
 
-                gameMaster.ReplyToPlayer(command);
+                return await gameMaster.ReplyToPlayer(0, command);
             }
         }
     }

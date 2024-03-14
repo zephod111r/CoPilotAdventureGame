@@ -6,6 +6,7 @@ using System.IO;
 using System.Net;
 using System.Security.Policy;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Game.Functions
 {
@@ -28,8 +29,10 @@ namespace Game.Functions
         [Function(nameof(Root))]
         public static async Task<HttpResponseData> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "/")] HttpRequestData req,
-            ExecutionContext context)
+            FunctionContext context)
         {
+            ILogger logger = context.GetLogger(nameof(Root));
+            logger.LogInformation("C# HTTP trigger function processed a request.");
 
             if(nameOfRoot == null)
             {

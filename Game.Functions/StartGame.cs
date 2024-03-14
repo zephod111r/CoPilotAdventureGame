@@ -4,49 +4,37 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Game.Common.Manager;
-using Game.Common.Rules;
-using Newtonsoft.Json;
-using System.Net;
+using Microsoft.Extensions.Configuration;
 using System;
+using Game.Common.Manager;
+using Microsoft.Extensions.DependencyInjection;
+using System.Net;
 
 namespace Game.Functions
 {
-    public partial class ParseText
+    public class StartGame
     {
-        IGameMaster _game { get; }
+        IGameManager _game { get; }
 
-        public ParseText(IGameMaster manager)
+        public StartGame(IGameManager manager)
         {
             _game = manager;
         }
 
-        [Function(nameof(ParseText))]
+        [Function(nameof(StartGame))]
         public async Task<HttpResponseData> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = nameof(ParseText))] HttpRequestData req,
-            [FromBody] Message bodyText,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = nameof(StartGame))] HttpRequestData req,
             FunctionContext context)
         {
-            ILogger logger = context.GetLogger(nameof(ParseText));
+            ILogger logger = context.GetLogger(nameof(StartGame));
             logger.LogInformation("C# HTTP trigger function processed a request.");
             // parse query parameter
-            string text = req.Query["message"];
-
-            if(text == null)
+            try
             {
-                text = bodyText.message;
-            }
+                string content = await _game.Start();
 
-            if (text == null)
-            {
-                HttpResponseData responseBad = req.CreateResponse(System.Net.HttpStatusCode.BadRequest);
-                responseBad.WriteString("Invalid name, you can pass a message through a query or body of your request");
-                return responseBad;
-            }
-
-            try {
                 Message message = new Message();
-                message.message = await _game.ReplyToPlayer(text);
+                message.message = content;
 
                 HttpResponseData res = null;
                 res = req.CreateResponse(System.Net.HttpStatusCode.OK);

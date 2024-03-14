@@ -17,6 +17,12 @@
   <ItemGroup>
     <Using Include="System.Threading.ExecutionContext" Alias="ExecutionContext" />
   </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Game.AI\Game.AI.OpenAI.csproj" />
+		<ProjectReference Include="..\Game.Common\Game.Common.csproj" />
+		<ProjectReference Include="..\Game.RuleBook\Game.RuleBook.csproj" />
+		<ProjectReference Include="..\Game.Storage\Game.Storage.csproj" />
+	</ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.22.0" />
 	<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.1.0" /> 
