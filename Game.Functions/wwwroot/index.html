@@ -48,7 +48,7 @@
                 const message = inputBox.value.trim();
                 if (message) {
                     const listItem = document.createElement('li');
-                    listItem.textContent = "<div class='from_player'>You</div>" + message;
+                    listItem.innerHTML = "<div class='from_player'>You</div>" + message;
                     messageList.appendChild(listItem);
                     inputBox.value = '';
 
