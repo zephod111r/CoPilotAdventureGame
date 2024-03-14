@@ -7,6 +7,5 @@ namespace Game.Common.Rules
     {
         void StartGame();
         UIMessage ReplyToPlayer(string playerCommand);
-        
     }
 }

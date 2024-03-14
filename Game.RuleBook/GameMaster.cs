@@ -33,9 +33,9 @@ namespace Game.RuleBook
 
         private PlayerCharacter? gameMaster;
         private GameState? gameState;
-        private Queue<KeyValuePair<MessageType, object>>? history;
+        private Queue<KeyValuePair<MessageType, object>>? history = new Queue<KeyValuePair<MessageType, object>>();
 
-        public void StartGame()
+        public async Task<string> StartGame()
         {
             string theme = userInterfaceManager.GetInput(new UIMessage(UITargetWindow.Main, UIMessageType.Prompt, $"Choose a theme for the game, or skip to use the \"{DEFAULT_THEME}\""));
             gameSettings.Theme = string.IsNullOrEmpty(theme) ? DEFAULT_THEME : theme;
@@ -52,10 +52,18 @@ namespace Game.RuleBook
 
             userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.Heading, GetWelcomeMessage(), gameMaster));
 
-            history = new Queue<KeyValuePair<MessageType, object>>();
+            gameMaster = new PlayerCharacter(ruleBook.GetGameMasterName().Result, null, null, null, PlayerType.GameMaster, new Dictionary<string, int>(), new Inventory());
+
+            return "Let's go on an adventure together!";
         }
 
         public UIMessage ReplyToPlayer(string playerCommand)
+        {
+            var locationName = gameState?.Players[gameState.CurrentPlayer].Location ?? "unknown location";
+            userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.Heading, $"You are in {locationName}"), gameMaster);
+        }
+
+        public void ReplyToPlayer(string playerCommand)
         {
             var context = new
             {
@@ -85,8 +93,6 @@ namespace Game.RuleBook
 
             history.Enqueue(new KeyValuePair<MessageType, object>(MessageType.User, query));
             history.Enqueue(new KeyValuePair<MessageType, object>(MessageType.Assistant, response.Content));
-
-            return new UIMessage(UITargetWindow.Main, UIMessageType.Heading, content, gameMaster);
         }
 
         private PlayerCharacter CreateCharacter(string location)

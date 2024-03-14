@@ -8,21 +8,23 @@ using Game.Common.UI;
 
 namespace Game.Functions
 {
-    public static class ParseText
+    public partial class ParseText
     {
-        [JsonObject]
-        public class Message
+        IGameMaster _game { get; }
+
+        public ParseText(IGameMaster manager)
         {
-            [JsonProperty("message")]
-            public string message { get; set; }
+            _game = manager;
         }
 
         [Function(nameof(ParseText))]
-        public static async Task<HttpResponseData> Run(
+        public async Task<HttpResponseData> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = nameof(ParseText))] HttpRequestData req,
             [FromBody] Message bodyText,
-            FunctionContext executionContext)
+            FunctionContext context)
         {
+            ILogger logger = context.GetLogger(nameof(ParseText));
+            logger.LogInformation("C# HTTP trigger function processed a request.");
             // parse query parameter
             string text = req.Query["message"];
 

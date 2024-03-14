@@ -1,5 +1,6 @@
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
+using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 
 namespace Game.Functions
@@ -9,8 +10,10 @@ namespace Game.Functions
         [Function(nameof(ParseDocument))]
         public static async Task<HttpResponseData> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = nameof(ParseDocument))] HttpRequestData req,
-            FunctionContext executionContext)
+            FunctionContext context)
         {
+            ILogger logger = context.GetLogger(nameof(ParseDocument));
+            logger.LogInformation("C# HTTP trigger function processed a request.");
             // parse query parameter
             string name = req.Query["name"];
 
