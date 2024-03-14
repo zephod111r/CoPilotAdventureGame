@@ -13,20 +13,18 @@ namespace Game.TextUI
 
         public void Start()
         {
-            // string welcomeMessage = ruleBook.GetWelcomeMessage();
-
             gameMaster.StartGame();
-            gameMaster.AnnounceLocation(0);
+
             while (true)
             {
                 // Game loop
-                string command = userInterfaceManager.GetInput();
+                string command = userInterfaceManager.GetInput(new UIMessage(UITargetWindow.Main, UIMessageType.Prompt, "You"));
                 if (command == "exit")
                 {
                     break;
                 }
 
-                gameMaster.ReplyToPlayer(0, command);
+                gameMaster.ReplyToPlayer(command);
             }
         }
     }

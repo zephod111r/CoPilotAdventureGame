@@ -15,13 +15,14 @@ namespace Game.TextUI.UI
                         Console.ForegroundColor = ConsoleColor.Cyan;
                         break;
                     case PlayerType.GameMaster:
-                        Console.ForegroundColor = ConsoleColor.DarkMagenta;
+                        Console.ForegroundColor = ConsoleColor.Magenta;
                         break;
                     case PlayerType.NonPlayerCharacter:
                         Console.ForegroundColor = ConsoleColor.DarkRed;
                         break;
                 }
-                Console.WriteLine(from.Name);
+                Console.Write(from.Name);
+                Console.Write(": ");
             }
 
             switch (message.Type)
@@ -43,7 +44,8 @@ namespace Game.TextUI.UI
                     break;
                 case UIMessageType.Prompt:
                     Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.WriteLine(message.Content);
+                    Console.Write(message.Content);
+                    Console.Write(": ");
                     Console.ResetColor();
                     break;
                 case UIMessageType.Normal:

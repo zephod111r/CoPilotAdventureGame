@@ -1,7 +1,7 @@
 ﻿namespace Game.Common.Rules
 {
-    public class GameMap(Dictionary<string, MapLocation> mapLocations)
+    public class GameMap
     {
-        public Dictionary<string, MapLocation> MapLocations { get; private set; } = mapLocations;
+        public Dictionary<string, MapLocation>? Locations { get; set; }
     }
 }

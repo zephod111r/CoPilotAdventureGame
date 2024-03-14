@@ -3,7 +3,7 @@
     public interface IGameMaster
     {
         void StartGame();
-        void AnnounceLocation(int playerId);
-        void ReplyToPlayer(int playerId, string playerCommand);
+        void AnnounceLocation();
+        void ReplyToPlayer(string playerCommand);
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Azure.AI.OpenAI;
 using Game.Common.Configuration;
 using Microsoft.Extensions.Logging;
-using System.Text;
+using System.Text.Json;
 
 namespace Game.AI.OpenAI
 {
@@ -26,30 +26,49 @@ namespace Game.AI.OpenAI
             var chatCompletionsOptions = new ChatCompletionsOptions()
             {
                 DeploymentName = MODEL_NAME, // Use DeploymentName for "model" with non-Azure clients
-                Messages =
-                {
-                    new ChatRequestSystemMessage(request.Context),
-                    new ChatRequestUserMessage(request.Query),
-                    new ChatRequestUserMessage($"Output format is {request.Format}"),
-                }
             };
 
-            return await Task.Run(() =>
+            string context;
+            string query;
+            if (request.ContentType == ContentType.Json)
             {
-                StringBuilder responseContent = new StringBuilder();
+                chatCompletionsOptions.ResponseFormat = ChatCompletionsResponseFormat.JsonObject;
 
-                foreach (ChatChoice chatUpdate in client.GetChatCompletions(chatCompletionsOptions).Value.Choices)
+                // Add a system message that contains the word 'json'
+                chatCompletionsOptions.Messages.Add(new ChatRequestSystemMessage("json"));
+
+                context = JsonSerializer.Serialize(request.Context);
+                query = JsonSerializer.Serialize(request.Query);
+            }
+            else
+            {
+                context = request.Context.ToString()!;
+                query = request.Query.ToString()!;
+            }
+
+            if (!string.IsNullOrEmpty(context))
+            {
+                chatCompletionsOptions.Messages.Add(new ChatRequestSystemMessage(context));
+            }
+
+            foreach (var msg in request.History)
+            {
+                ChatRequestMessage message = msg.Key == MessageType.User ? new ChatRequestUserMessage(msg.Value.ToString()) : new ChatRequestAssistantMessage(msg.Value.ToString());
+                chatCompletionsOptions.Messages.Add(message);
+            }
+
+            chatCompletionsOptions.Messages.Add(new ChatRequestUserMessage(query));
+
+            logger.LogTrace($"OpenAI request:\n ContentType: {request.ContentType}\n Context: {context}\n Query: {query}\n History: {JsonSerializer.Serialize(request.History)}");
+
+            return await client.GetChatCompletionsAsync(chatCompletionsOptions)
+                .ContinueWith(response =>
                 {
-                    if (!string.IsNullOrEmpty(chatUpdate.Message.Content))
-                    {
-                        responseContent.AppendLine(chatUpdate.Message.Content);
-                    }
-                }
-
-                logger.LogTrace($"OpenAI response:\n{responseContent}");
-
-                return new AIResponse(responseContent.ToString());
-            });
+                    string content = response.Result.Value.Choices[0].Message.Content;
+                    logger.LogTrace($"OpenAI response: total={response.Result.Value.Usage.TotalTokens}, completion={response.Result.Value.Usage.CompletionTokens}, prompt={response.Result.Value.Usage.PromptTokens} ");
+                    logger.LogTrace($"OpenAI response:\n{content}");
+                    return new AIResponse(content);
+                });
         }
     }
 }

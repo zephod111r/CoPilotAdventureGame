@@ -14,7 +14,7 @@ public class Launcher
 {
     public static void Main(string[] args)
     {
-        var gameSettings = new GameSettings("Dungeons & Dragons");
+        var gameSettings = new GameSettings();
 
         var serviceProvider = new ServiceCollection()
             .AddLogging(logging => { 
