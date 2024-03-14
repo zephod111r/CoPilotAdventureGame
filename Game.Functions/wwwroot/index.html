@@ -1,11 +1,77 @@
 ﻿<!DOCTYPE html>
-
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <title>Hello World</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message List</title>
+    <style>
+        /* Add your custom CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #message-list {
+            list-style: none;
+            padding: 0;
+        }
+        #message-list li {
+            margin-bottom: 10px;
+        }
+        #input-box {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
-    Hello World
+    <h1>Your Adventure So Far</h1>
+    <ul id="message-list">
+        <!-- Existing messages will be added dynamically -->
+    </ul>
+    <input type="text" id="input-box" placeholder="Type your message...">
+    <!-- Add JavaScript to handle input and message list -->
+    <script>
+        const inputBox = document.getElementById('input-box');
+        const messageList = document.getElementById('message-list');
+
+        inputBox.addEventListener('keydown', async (event) => {
+            if (event.key === 'Enter') {
+                const message = inputBox.value.trim();
+                if (message) {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = message;
+                    messageList.appendChild(listItem);
+                    inputBox.value = '';
+
+                    // Send the message as JSON to a link (customize the URL)
+                    const url = '/ParseText'; // Update with your API endpoint
+                    const data = { message };
+
+                    try {
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(data)
+                        });
+
+                        if (response.ok) {
+                            const responseData = await response.json();
+                            const responseListItem = document.createElement('li');
+                            responseListItem.textContent = responseData.message;
+                            messageList.appendChild(responseListItem);
+                            console.log('Message sent successfully!');
+                        } else {
+                            console.error('Error sending message:', response.statusText);
+                        }
+                    } catch (error) {
+                        console.error('Network error:', error);
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>
