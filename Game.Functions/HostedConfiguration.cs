@@ -7,12 +7,12 @@ namespace Game.Functions
     public class HostedConfiguration : IAppConfiguration
     {
         private readonly ILogger<HostedConfiguration> logger;
-        private readonly IConfigurationSection configuration;
+        private readonly IConfiguration configuration;
 
         public HostedConfiguration(IConfiguration configuration, ILogger<HostedConfiguration> logger)
         {
             this.logger = logger;
-            this.configuration = configuration.GetSection("Application");
+            this.configuration = configuration;
         }
 
         public string Get(ConfigurationParameter key)
