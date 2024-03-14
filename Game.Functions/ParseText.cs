@@ -5,6 +5,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 using System.Threading.Tasks;
 using Game.Common.Rules;
 using Game.Common.UI;
+using Microsoft.Extensions.Logging;
 
 namespace Game.Functions
 {
@@ -40,10 +41,10 @@ namespace Game.Functions
                 return responseBad;
             }
 
-            IGameMaster gameMaster = executionContext.InstanceServices.GetService(typeof(IGameMaster)) as IGameMaster;
-            UIMessage reply = gameMaster.ReplyToPlayer(text);
+            IGameMaster gameMaster = context.InstanceServices.GetService(typeof(IGameMaster)) as IGameMaster;
+            UIMessage reply = await gameMaster.ReplyToPlayer(text);
 
-            var replyJson = new
+            var replyJson = new Message
             {
                 message = reply.Content,
                 from = reply.From?.Name ?? "System",

@@ -20,8 +20,8 @@ namespace Game.TextUI
             var builder = new ConfigurationBuilder()
                 // get paranet fodler of Environment.ProcessPath
                 .SetBasePath(Directory.GetParent(Environment.ProcessPath!)!.FullName)
-                .AddJsonFile("settings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"{environmentName}.settings.json", optional: true, reloadOnChange: true);
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"{environmentName}.appsettings.json", optional: true, reloadOnChange: true);
 
             IConfigurationRoot configurationRoot = builder.Build();
             configuration = configurationRoot.GetSection("Application");

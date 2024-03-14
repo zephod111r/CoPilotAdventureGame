@@ -34,36 +34,34 @@ namespace Game.RuleBook
         private PlayerCharacter? gameMaster;
         private GameState? gameState;
         private Queue<KeyValuePair<MessageType, object>>? history = new Queue<KeyValuePair<MessageType, object>>();
+        private bool isGameStarted = false;
+        private string welcomeMessage = "";
 
-        public async Task<string> StartGame()
+        public async Task<UIMessage> StartGame()
         {
-            string theme = userInterfaceManager.GetInput(new UIMessage(UITargetWindow.Main, UIMessageType.Prompt, $"Choose a theme for the game, or skip to use the \"{DEFAULT_THEME}\""));
-            gameSettings.Theme = string.IsNullOrEmpty(theme) ? DEFAULT_THEME : theme;
+            if (!isGameStarted)
+            {
+                string theme = userInterfaceManager.GetInput(new UIMessage(UITargetWindow.Main, UIMessageType.Prompt, $"Choose a theme for the game, or skip to use the \"{DEFAULT_THEME}\""));
+                gameSettings.Theme = string.IsNullOrEmpty(theme) ? DEFAULT_THEME : theme;
 
-            var map = CreateMap();
-            var startLocation = map.Locations!.First().Value;
+                var map = CreateMap();
+                var startLocation = map.Locations!.First().Value;
 
-            var player = CreateCharacter(startLocation.Name);
+                var player = await CreateCharacter(startLocation.Name);
 
-            gameState = new GameState(map, [player]);
-            gameState.CurrentPlayer = 0;
+                gameState = new GameState(map, [player]);
+                gameState.CurrentPlayer = 0;
 
-            gameMaster = new PlayerCharacter(ruleBook.GetGameMasterName().Result, null, null, null, PlayerType.GameMaster, [], new Inventory());
+                gameMaster = new PlayerCharacter(ruleBook.GetGameMasterName().Result, null, null, null, PlayerType.GameMaster, [], new Inventory());
+            
+                welcomeMessage = GetWelcomeMessage();
+                isGameStarted = true;
+            }
 
-            userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.Heading, GetWelcomeMessage(), gameMaster));
-
-            gameMaster = new PlayerCharacter(ruleBook.GetGameMasterName().Result, null, null, null, PlayerType.GameMaster, new Dictionary<string, int>(), new Inventory());
-
-            return "Let's go on an adventure together!";
+            return new UIMessage(UITargetWindow.Main, UIMessageType.Heading, welcomeMessage, gameMaster);
         }
 
-        public UIMessage ReplyToPlayer(string playerCommand)
-        {
-            var locationName = gameState?.Players[gameState.CurrentPlayer].Location ?? "unknown location";
-            userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.Heading, $"You are in {locationName}"), gameMaster);
-        }
-
-        public void ReplyToPlayer(string playerCommand)
+        public async Task<UIMessage> ReplyToPlayer(string playerCommand)
         {
             var context = new
             {
@@ -77,11 +75,10 @@ namespace Game.RuleBook
                 playerAction = playerCommand,
             };
 
-            AIResponse response = platform.Query(AIRequestBuilder.ForJson(query)
+            AIResponse response = await platform.Query(AIRequestBuilder.ForJson(query)
                     .WithContext(context)
                     .WithHistory(history!)
-                    .Build())
-                .Result;
+                    .Build());
 
             string content = ParseReply(JsonConvert.DeserializeObject<GameMasterReply>(response.Content));
 
@@ -93,9 +90,11 @@ namespace Game.RuleBook
 
             history.Enqueue(new KeyValuePair<MessageType, object>(MessageType.User, query));
             history.Enqueue(new KeyValuePair<MessageType, object>(MessageType.Assistant, response.Content));
+
+            return new UIMessage(UITargetWindow.Main, UIMessageType.Heading, content, gameMaster);
         }
 
-        private PlayerCharacter CreateCharacter(string location)
+        private async Task<PlayerCharacter> CreateCharacter(string location)
         {
             NameDescription race = GetRace();
             userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.Normal, $"You selected a {race.Name}", gameMaster));
@@ -103,7 +102,7 @@ namespace Game.RuleBook
             NameDescription clasz = GetClass(race);
             userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.Normal, $"You selected a {clasz.Name} of {race.Name}", gameMaster));
 
-            PlayerCharacter playerCharacter = ruleBook.CreateCharacter(race, clasz).Result;
+            PlayerCharacter playerCharacter = await ruleBook.CreateCharacter(race, clasz);
             userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.Heading,
                 $"You created the character named {playerCharacter.Name}, who is a {playerCharacter.Class!.Name} of {playerCharacter.Race!.Name} and looks like:", gameMaster));
             userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.Normal, playerCharacter.Avatar ?? ""));

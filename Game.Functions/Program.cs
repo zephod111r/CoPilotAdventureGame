@@ -26,7 +26,8 @@ namespace Game.Functions
             .ConfigureAppConfiguration((hostingContext, config) =>
             {
                 // Use 'settings.json' as a configuration source
-                config.AddJsonFile("local.settings.json", optional: true, reloadOnChange: true);
+                config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+                config.AddJsonFile("local.appsettings.json", optional: true, reloadOnChange: true);
             })
             .ConfigureServices(services =>
             {

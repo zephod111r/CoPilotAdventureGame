@@ -1,26 +1,19 @@
 
-using Newtonsoft.Json;
+using Game.Common.Manager;
+using Game.Common.Rules;
+using Game.Common.UI;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System;
-using Game.Common.Manager;
-using Microsoft.Extensions.DependencyInjection;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace Game.Functions
 {
     public class StartGame
     {
-        IGameManager _game { get; }
-
-        public StartGame(IGameManager manager)
-        {
-            _game = manager;
-        }
-
         [Function(nameof(StartGame))]
         public async Task<HttpResponseData> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = nameof(StartGame))] HttpRequestData req,
@@ -31,15 +24,19 @@ namespace Game.Functions
             // parse query parameter
             try
             {
-                string content = await _game.Start();
-
-                Message message = new Message();
-                message.message = content;
+                IGameMaster gameMaster = context.InstanceServices.GetService(typeof(IGameMaster)) as IGameMaster;
+                UIMessage welcomeMessage = await gameMaster.StartGame();
+                
+                var replyJson = new Message
+                {
+                    message = welcomeMessage.Content,
+                    from = welcomeMessage.From?.Name ?? "System",
+                };
 
                 HttpResponseData res = null;
-                res = req.CreateResponse(System.Net.HttpStatusCode.OK);
+                res = req.CreateResponse(HttpStatusCode.OK);
                 res.Headers.Add("content-type", "application/json");
-                res.WriteString(JsonConvert.SerializeObject(message));
+                res.WriteString(JsonConvert.SerializeObject(replyJson));
                 return res;
             }
             catch (Exception ex)

@@ -10,13 +10,12 @@ namespace Game.Functions
     public class GameManager(IGameMaster gameMaster, ILogger<GameManager> logger) : IGameManager, IHostedService
     {
         private readonly ILogger<GameManager> logger = logger;
-        private readonly IUserInterfaceManager userInterfaceManager = userInterfaceManager;
         private readonly IGameMaster gameMaster = gameMaster;
 
         public void Start()
         {
             logger.LogInformation("Starting game....");
-            gameMaster.StartGame();
+            // gameMaster.StartGame();
         }
 
         public Task StartAsync(CancellationToken cancellationToken)

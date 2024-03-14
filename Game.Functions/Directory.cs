@@ -18,22 +18,32 @@ namespace Game.Functions
         {
             var response = req.CreateResponse(HttpStatusCode.OK);
 
-            Dictionary<string, string> fileMap = new Dictionary<string, string>();
-
-            DirectoryInfo info = new DirectoryInfo(".");
-            foreach (var item in info.EnumerateDirectories())
-            {
-                foreach (var item1 in item.EnumerateFiles())
-                {
-                    fileMap.Add(item1.FullName, item.FullName);
-                }
-            };
+            Dictionary<string, string> fileMap = await GetFiles();
 
             string jsonMap = JsonConvert.SerializeObject(fileMap);
             byte[] bytearray = Encoding.UTF8.GetBytes(jsonMap);
             response.Body = new MemoryStream(bytearray);
             response.Headers.Add("content-type", "text/html");
             return response;
+        }
+
+        private static async Task<Dictionary<string, string>> GetFiles()
+        {
+            Dictionary<string, string> fileMap = new Dictionary<string, string>();
+
+            await Task.Run(() =>
+            {
+                DirectoryInfo info = new DirectoryInfo(".");
+                foreach (var item in info.EnumerateDirectories())
+                {
+                    foreach (var item1 in item.EnumerateFiles())
+                    {
+                        fileMap.Add(item1.FullName, item.FullName);
+                    }
+                };
+            });
+
+            return fileMap;
         }
     }
 }

@@ -7,8 +7,8 @@ using Game.TextUI;
 using Game.RuleBook;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Game.TextUI.UI;
 using Game.Common.UI;
+using Game.TextUI.UI;
 
 public class Launcher
 {

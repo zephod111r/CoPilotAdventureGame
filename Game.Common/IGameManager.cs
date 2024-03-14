@@ -4,6 +4,6 @@ namespace Game.Common.Manager
 {
     public interface IGameManager
     {
-        async Task<string> Start() { return ""; }
+        void Start();
     }
 }

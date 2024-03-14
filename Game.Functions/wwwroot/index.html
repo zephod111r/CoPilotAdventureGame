@@ -22,12 +22,19 @@
             border: 1px solid #ccc;
             border-radius: 5px;
         }
+        .from-master {
+            color: #0000FF;
+        }
+        .from_player {
+            color: #FF0000;
+        }
     </style>
 </head>
 <body>
     <h1>Your Adventure So Far</h1>
     <ul id="message-list">
         <!-- Existing messages will be added dynamically -->
+        <li>Starting the game. Please wait...</li>
     </ul>
     <input type="text" id="input-box" placeholder="Type your message...">
     <!-- Add JavaScript to handle input and message list -->
@@ -41,7 +48,7 @@
                 const message = inputBox.value.trim();
                 if (message) {
                     const listItem = document.createElement('li');
-                    listItem.textContent = "You: " + message;
+                    listItem.textContent = "<div class='from_player'>You</div>" + message;
                     messageList.appendChild(listItem);
                     inputBox.value = '';
 
@@ -60,7 +67,7 @@
                         if (response.ok) {
                             const responseData = await response.json();
                             const responseListItem = document.createElement('li');
-                            responseListItem.innerHTML = "<b>" + responseData.from + "</b>: " + responseData.message;
+                            responseListItem.innerHTML = "<div class='from-master'>" + responseData.from + "</div>" + responseData.message;
                             messageList.appendChild(responseListItem);
                             console.log('Message sent successfully!');
                         } else {
@@ -88,7 +95,7 @@
                 if (response.ok) {
                     const responseData = await response.json();
                     const responseListItem = document.createElement('li');
-                    responseListItem.textContent = responseData.message;
+                    responseListItem.innerHTML = "<div class='from-master'>" + responseData.from + "</div>" + responseData.message;
                     messageList.appendChild(responseListItem);
                     console.log('Message received successfully!');
                 } else {

@@ -34,7 +34,7 @@ namespace Game.Functions
             ILogger logger = context.GetLogger(nameof(Root));
             logger.LogInformation("C# HTTP trigger function processed a request.");
 
-            if(nameOfRoot == null)
+            if (nameOfRoot == null)
             {
                 nameOfRoot = root();
             }
@@ -43,7 +43,6 @@ namespace Game.Functions
 
             try
             {
-
                 FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read);
                 var response = req.CreateResponse(HttpStatusCode.OK);
                 response.Body = stream;

@@ -5,7 +5,7 @@ namespace Game.Common.Rules
 {
     public interface IGameMaster
     {
-        void StartGame();
-        UIMessage ReplyToPlayer(string playerCommand);
+        Task<UIMessage> StartGame();
+        Task<UIMessage> ReplyToPlayer(string playerCommand);
     }
 }
