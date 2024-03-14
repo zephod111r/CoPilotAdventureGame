@@ -1,9 +1,12 @@
-﻿namespace Game.Common.Rules
+﻿using Game.Common.Character;
+using Game.Common.UI;
+
+namespace Game.Common.Rules
 {
     public interface IGameMaster
     {
         void StartGame();
-        void AnnounceLocation();
-        void ReplyToPlayer(string playerCommand);
+        UIMessage ReplyToPlayer(string playerCommand);
+        
     }
 }

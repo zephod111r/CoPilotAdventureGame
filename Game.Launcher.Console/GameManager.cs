@@ -24,7 +24,8 @@ namespace Game.TextUI
                     break;
                 }
 
-                gameMaster.ReplyToPlayer(command);
+                UIMessage reply = gameMaster.ReplyToPlayer(command);
+                userInterfaceManager.DisplayMessage(reply);
             }
         }
     }

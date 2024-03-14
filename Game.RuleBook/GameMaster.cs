@@ -50,18 +50,12 @@ namespace Game.RuleBook
 
             gameMaster = new PlayerCharacter(ruleBook.GetGameMasterName().Result, null, null, null, PlayerType.GameMaster, [], new Inventory());
 
-            userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.Heading, GetWelcomeMessage()), gameMaster);
+            userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.Heading, GetWelcomeMessage(), gameMaster));
 
             history = new Queue<KeyValuePair<MessageType, object>>();
         }
 
-        public void AnnounceLocation()
-        {
-            var locationName = gameState?.Players[gameState.CurrentPlayer].Location ?? "unknown location";
-            userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.Heading, $"You are in {locationName}"), gameMaster);
-        }
-
-        public void ReplyToPlayer(string playerCommand)
+        public UIMessage ReplyToPlayer(string playerCommand)
         {
             var context = new
             {
@@ -82,7 +76,6 @@ namespace Game.RuleBook
                 .Result;
 
             string content = ParseReply(JsonConvert.DeserializeObject<GameMasterReply>(response.Content));
-            userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.Heading, content), gameMaster);
 
             // dequeue elements while the size of the history queue greater than 25
             while (history!.Count > 23)
@@ -92,19 +85,21 @@ namespace Game.RuleBook
 
             history.Enqueue(new KeyValuePair<MessageType, object>(MessageType.User, query));
             history.Enqueue(new KeyValuePair<MessageType, object>(MessageType.Assistant, response.Content));
+
+            return new UIMessage(UITargetWindow.Main, UIMessageType.Heading, content, gameMaster);
         }
 
         private PlayerCharacter CreateCharacter(string location)
         {
             NameDescription race = GetRace();
-            userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.Normal, $"You selected a {race.Name}"), gameMaster);
+            userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.Normal, $"You selected a {race.Name}", gameMaster));
 
             NameDescription clasz = GetClass(race);
-            userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.Normal, $"You selected a {clasz.Name} of {race.Name}"), gameMaster);
+            userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.Normal, $"You selected a {clasz.Name} of {race.Name}", gameMaster));
 
             PlayerCharacter playerCharacter = ruleBook.CreateCharacter(race, clasz).Result;
             userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.Heading,
-                $"You created the character named {playerCharacter.Name}, who is a {playerCharacter.Class!.Name} of {playerCharacter.Race!.Name} and looks like:"), gameMaster);
+                $"You created the character named {playerCharacter.Name}, who is a {playerCharacter.Class!.Name} of {playerCharacter.Race!.Name} and looks like:", gameMaster));
             userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.Normal, playerCharacter.Avatar ?? ""));
 
             playerCharacter.Avatar = null;
@@ -116,7 +111,7 @@ namespace Game.RuleBook
         private NameDescription GetRace()
         {
             NameDescription[] races = ruleBook.GetRaces().Result;
-            userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.Heading, "Choose race:"), gameMaster);
+            userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.Heading, "Choose race:", gameMaster));
             foreach (NameDescription race in races)
             {
                 userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.ListItemTitle, race.Name));
@@ -136,7 +131,7 @@ namespace Game.RuleBook
         private NameDescription GetClass(NameDescription race)
         {
             NameDescription[] classes = ruleBook.GetClasses(race.Name).Result;
-            userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.Heading, $"Choose class for {race.Name}:"), gameMaster);
+            userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.Heading, $"Choose class for {race.Name}:", gameMaster));
             foreach (NameDescription clasz in classes)
             {
                 userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.ListItemTitle, clasz.Name));

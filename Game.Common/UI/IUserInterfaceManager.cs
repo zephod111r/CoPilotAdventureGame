@@ -17,16 +17,17 @@ namespace Game.Common.UI
         Normal,
     }
 
-    public class UIMessage(UITargetWindow targetWindow, UIMessageType type, string content)
+    public class UIMessage(UITargetWindow targetWindow, UIMessageType type, string content, PlayerCharacter? from = null)
     {
         public UITargetWindow TargetWindow { get; private set; } = targetWindow;
         public UIMessageType Type { get; private set; } = type;
         public string Content { get; private set; } = content;
+        public PlayerCharacter? From { get; private set; } = from;
     }
 
     public interface IUserInterfaceManager
     {
-        void DisplayMessage(UIMessage message, PlayerCharacter? from = null);
+        void DisplayMessage(UIMessage message);
         string GetInput(UIMessage? prompt = null);
     }
 }

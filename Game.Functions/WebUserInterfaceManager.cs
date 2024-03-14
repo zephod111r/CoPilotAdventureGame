@@ -1,9 +1,10 @@
 ﻿using Game.Common.Character;
 using Game.Common.UI;
+using System;
 
 namespace Game.TextUI.UI
 {
-    internal class ConsoleUserInterfaceManager : IUserInterfaceManager
+    internal class WebUserInterfaceManager : IUserInterfaceManager
     {
         public void DisplayMessage(UIMessage message)
         {
@@ -21,7 +22,7 @@ namespace Game.TextUI.UI
                         Console.ForegroundColor = ConsoleColor.DarkRed;
                         break;
                 }
-                Console.Write(message.From.Name);
+                Console.Write(message.From?.Name);
                 Console.Write(": ");
             }
 
@@ -56,18 +57,9 @@ namespace Game.TextUI.UI
             }
         }
 
-        public string GetInput(UIMessage? prompt = null)
+        public string GetInput(UIMessage prompt = null)
         {
-            if (prompt != null)
-            {
-                DisplayMessage(prompt);
-            }
-
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.Write("> ");
-            Console.ResetColor();
-
-            return Console.ReadLine() ?? "";
+            return "";
         }
     }
 }

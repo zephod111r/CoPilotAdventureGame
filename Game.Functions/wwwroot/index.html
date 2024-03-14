@@ -40,7 +40,7 @@
                 const message = inputBox.value.trim();
                 if (message) {
                     const listItem = document.createElement('li');
-                    listItem.textContent = message;
+                    listItem.textContent = "You: " + message;
                     messageList.appendChild(listItem);
                     inputBox.value = '';
 
@@ -60,7 +60,7 @@
                         if (response.ok) {
                             const responseData = await response.json();
                             const responseListItem = document.createElement('li');
-                            responseListItem.textContent = responseData.message;
+                            responseListItem.innerHTML = "<b>" + responseData.from + "</b>: " + responseData.message;
                             messageList.appendChild(responseListItem);
                             console.log('Message sent successfully!');
                         } else {

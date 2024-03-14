@@ -3,6 +3,8 @@ using Newtonsoft.Json;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using System.Threading.Tasks;
+using Game.Common.Rules;
+using Game.Common.UI;
 
 namespace Game.Functions
 {
@@ -24,7 +26,7 @@ namespace Game.Functions
             // parse query parameter
             string text = req.Query["message"];
 
-            if(text == null)
+            if (text == null)
             {
                 text = bodyText.message;
             }
@@ -36,9 +38,18 @@ namespace Game.Functions
                 return responseBad;
             }
 
-            HttpResponseData res = null;
+            IGameMaster gameMaster = executionContext.InstanceServices.GetService(typeof(IGameMaster)) as IGameMaster;
+            UIMessage reply = gameMaster.ReplyToPlayer(text);
+
+            var replyJson = new
+            {
+                message = reply.Content,
+                from = reply.From?.Name ?? "System",
+            };
+
+            HttpResponseData res;
             res = req.CreateResponse(System.Net.HttpStatusCode.OK);
-            res.WriteString(text);
+            res.WriteString(JsonConvert.SerializeObject(replyJson));
             return res;
 
         }

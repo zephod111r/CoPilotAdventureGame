@@ -25,6 +25,11 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Game.AI\Game.AI.OpenAI.csproj" />
+    <ProjectReference Include="..\Game.Common\Game.Common.csproj" />
+    <ProjectReference Include="..\Game.RuleBook\Game.RuleBook.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <None Update="host.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
