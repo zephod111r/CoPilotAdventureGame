@@ -34,7 +34,7 @@ namespace Game.Functions
                 services.AddLogging(logging =>
                 {
                     logging.AddConsole();
-                    logging.SetMinimumLevel(LogLevel.Trace);
+                    logging.SetMinimumLevel(LogLevel.Debug);
                 })
                 .AddSingleton<IAIPlatform, OpenAIPlatform>()
                 .AddSingleton<IAppConfiguration, HostedConfiguration>()

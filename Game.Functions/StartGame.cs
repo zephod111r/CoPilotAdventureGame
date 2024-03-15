@@ -28,7 +28,7 @@ namespace Game.Functions
 
                 Message[] replyJson = welcomeMessages.Select(welcomeMessage => new Message
                 {
-                    message = welcomeMessage.Content,
+                    message = welcomeMessage.Type != UIMessageType.Image ? welcomeMessage.Content : null,
                     from = welcomeMessage.From?.Name ?? "System",
                     image = welcomeMessage.Type == UIMessageType.Image ? welcomeMessage.Content : null
                 }).ToArray(); ;

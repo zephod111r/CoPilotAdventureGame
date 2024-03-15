@@ -10,5 +10,6 @@ namespace Game.Common.Rules
         Task<PlayerCharacter> CreateCharacter(NameDescription race, NameDescription clasz);
         Task<GameMap?> CreateMap(int width, int height);
         Task<string> GetGameMasterName();
+        Task<string> GetImage(string query);
     }
 }

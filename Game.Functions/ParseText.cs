@@ -47,7 +47,7 @@ namespace Game.Functions
 
             Message[] replyJson = replyMessages.Select(uiMessage => new Message
             {
-                message = uiMessage.Content,
+                message = uiMessage.Type != UIMessageType.Image ? uiMessage.Content : null,
                 from = uiMessage.From?.Name ?? "System",
                 image = uiMessage.Type == UIMessageType.Image ? uiMessage.Content : null
             }).ToArray();

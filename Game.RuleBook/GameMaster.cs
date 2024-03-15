@@ -90,6 +90,13 @@ namespace Game.RuleBook
 
             string content = ParseReply(JsonConvert.DeserializeObject<GameMasterReply>(response.Content));
 
+            if (playerCommand.Contains("look"))
+            {
+                var imageUrl = await ruleBook.GetImage(content);
+                return [new UIMessage(UITargetWindow.Main, UIMessageType.Heading, content, gameMaster),
+                        new UIMessage(UITargetWindow.Main, UIMessageType.Image, imageUrl, gameMaster)];
+            }
+
             return [new UIMessage(UITargetWindow.Main, UIMessageType.Heading, content, gameMaster)];
         }
 

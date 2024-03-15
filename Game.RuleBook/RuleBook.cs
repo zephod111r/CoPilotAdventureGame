@@ -15,7 +15,7 @@ namespace Game.RuleBook
         private const string PROMPT_GET_CLASSES = "Return the list of classes a player can choose from when creating its character for the race {0}.";
 
         private const string CHARACTER_NAME_PROMPT = "Generate a name of the character of race {0} ({1}) and class {2} ({3}).";
-        private const string CHARACTER_IMAGE_PROMPT = "Generate an avatar image of the character of race {0} ({1}) and class {2} ({3})";
+        private const string CHARACTER_IMAGE_PROMPT = "Generate an avatar image of the character of race {0} ({1}) and class {2} ({3}). The image must contain ncharacter only without any UI elements.";
 
         private const string ABILITIES_PROMPT = "Generate a list of abilities of the character with random values but adjusted to the class {0} ({1}) and race {2} ({3}).";
         private const string ABILITIES_FORMAT = "JSON object with ability name as a key and an integer value";
@@ -63,15 +63,15 @@ namespace Game.RuleBook
                 platform.Query(AIRequestBuilder.ForJson(GetPrompt(string.Format(ABILITIES_PROMPT, clasz.Name, clasz.Description, race.Name, race.Description), ABILITIES_FORMAT)).WithContext(gameContext).Build())
                         .ContinueWith(action => action.Result.Content),
                 platform.Query(AIRequestBuilder.ForJson(GetPrompt(string.Format(INVENTORY_PROMPT, clasz.Name, clasz.Description, race.Name, race.Description), INVENTORY_FORMAT)).WithContext(gameContext).Build())
-                        .ContinueWith(action => action.Result.Content)
+                        .ContinueWith(action => action.Result.Content),
+                platform.GenerateImage(AIRequestBuilder.ForText(string.Format(CHARACTER_IMAGE_PROMPT, race.Name, race.Description, clasz.Name, clasz.Description)).WithContext($"{GAME_CONTEXT}. Theme of the game is {gameSettings.Theme}").Build())
+                        .ContinueWith(action => action.Result.AbsoluteUri.ToString())
             );
 
             string name = Util.ConvertJsonToValue(results[0], "message");
-            string avatar = GetMarkdownQuoteFromString(results[1]);
-            Dictionary<string, int> abilities = Util.ConvertJsonToDictionary<int>(results[2], "abilities");
-            Inventory inventory = JsonConvert.DeserializeObject<Inventory>(results[3])!;
-
-            Uri imageResponse = await platform.GenerateImage(AIRequestBuilder.ForText(CHARACTER_IMAGE_PROMPT).WithContext($"{GAME_CONTEXT}. Theme of the game is {gameSettings.Theme}").Build());
+            Dictionary<string, int> abilities = Util.ConvertJsonToDictionary<int>(results[1], "abilities");
+            Inventory inventory = JsonConvert.DeserializeObject<Inventory>(results[2])!;
+            string avatar = GetMarkdownQuoteFromString(results[3]);
 
             return new PlayerCharacter(name, race, clasz, avatar, PlayerType.Human, new Dictionary<string, int>(abilities), inventory);
         }
@@ -86,6 +86,13 @@ namespace Game.RuleBook
         {
             return await platform.Query(AIRequestBuilder.ForJson(GetPrompt(GAME_MASTER_NAME_PROMPT, TEXT_FORMAT)).WithContext(gameContext).Build())
                 .ContinueWith(action => Util.ConvertJsonToValue(action.Result.Content, "message"));
+        }
+
+        public async Task<string> GetImage(string query)
+        {
+            return await platform.GenerateImage(AIRequestBuilder.ForText(query).WithContext($"{GAME_CONTEXT}. Theme of the game is {gameSettings.Theme}").Build())
+        .ContinueWith(action => action.Result.AbsoluteUri.ToString());
+
         }
 
         private static string GetMarkdownQuoteFromString(string content)

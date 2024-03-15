@@ -81,6 +81,9 @@ namespace Game.AI.OpenAI
                 Prompt = $"{request.Context}. {request.Query}",
 
             };
+
+            logger.LogTrace($"OpenAI request:\n Context: {request.Context}\n Query: {request.Query}");
+
             return await client.GetImageGenerationsAsync(imageGenerationsOptions)
                 .ContinueWith(response =>
                 {
