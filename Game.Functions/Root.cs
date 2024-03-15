@@ -12,8 +12,6 @@ namespace Game.Functions
 {
     public static class Root
     {
-        static string nameOfRoot { get; set; }
-
         static string root() {
             DirectoryInfo info = new DirectoryInfo(".");
             foreach (var item in info.EnumerateDirectories())
@@ -34,11 +32,7 @@ namespace Game.Functions
             ILogger logger = context.GetLogger(nameof(Root));
             logger.LogInformation("C# HTTP trigger function processed a request.");
 
-            if (nameOfRoot == null)
-            {
-                nameOfRoot = root();
-            }
-
+            string nameOfRoot = root();
             string path = string.Concat(@nameOfRoot, @"\index.html");
 
             try
