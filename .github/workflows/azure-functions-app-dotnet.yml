@@ -29,7 +29,7 @@ env:
 
 jobs:
   upload:
-    runs-on: windows-latest # For Linux, use ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: bacongobbler/azure-blob-storage-upload@main
