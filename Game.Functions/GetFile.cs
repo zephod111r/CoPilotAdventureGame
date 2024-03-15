@@ -1,16 +1,9 @@
-
-using Newtonsoft.Json;
+using Game.Common.Storage;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
-using System.Threading.Tasks;
-using Game.Common.Rules;
-using Game.Common.UI;
 using Microsoft.Extensions.Logging;
-using System.Linq;
-using Google.Protobuf.WellKnownTypes;
-using Azure;
-using Game.Common.Storage;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Game.Functions
 {

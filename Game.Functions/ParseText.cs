@@ -50,7 +50,7 @@ namespace Game.Functions
                 message = uiMessage.Type != UIMessageType.Image && uiMessage.Type != UIMessageType.Audio ? uiMessage.Content : null,
                 from = uiMessage.From?.Name ?? "System",
                 image = uiMessage.Type == UIMessageType.Image ? uiMessage.Content : null,
-                audio = uiMessage.Type == UIMessageType.Audio ? uiMessage.Content : null
+                audio = uiMessage.Type == UIMessageType.Audio ? $"/GetFile/{uiMessage.Content}" : null
             }).ToArray();
 
             HttpResponseData res;

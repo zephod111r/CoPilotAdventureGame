@@ -9,7 +9,7 @@ namespace Game.Common.Storage
     public interface IStorage
     {
         Task<Uri?> Upload(string key, byte[] value);
-        Task<Stream> GetFile(string key)
+        Task<Stream> GetFile(string key);
         Task<Uri?> GetFileUri(string key);
         Task Save<T>(string key, T value);
         Task<T?> Load<T>(string key);

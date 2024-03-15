@@ -92,7 +92,7 @@ namespace Game.RuleBook
 
             string content = ParseReply(JsonConvert.DeserializeObject<GameMasterReply>(response.Content));
 
-            string speechUrl = GetSpeech(content).AbsoluteUri;
+            string speechUrl = GetSpeech(content);
 
             if (playerCommand.ToLower().Contains("look"))
             {
@@ -103,7 +103,7 @@ namespace Game.RuleBook
             }
 
             return [new UIMessage(UITargetWindow.Main, UIMessageType.Heading, content, gameMaster),
-                    new UIMessage(UITargetWindow.Main, UIMessageType.Heading, speechUrl, gameMaster)];
+                    new UIMessage(UITargetWindow.Main, UIMessageType.Audio, speechUrl, gameMaster)];
         }
 
         private async Task<PlayerCharacter> CreateCharacter(string location)
@@ -234,12 +234,13 @@ namespace Game.RuleBook
             history.Enqueue(new KeyValuePair<MessageType, object>(MessageType.Assistant, response.Content));
         }
 
-        private Uri? GetSpeech(string content)
+        private string GetSpeech(string content)
         {
             var speech = platform.GenerateAudio(AIRequestBuilder.ForText(content).Build()).Result;
-            var url = storage.Upload($"audio{content.GetHashCode()}.mp3", speech).Result;
+            var fileName = $"audio{content.GetHashCode()}.mp3";
+            var url = storage.Upload(fileName, speech).Result;
 
-            return url;
+            return fileName;
         }
     }
 }

@@ -30,8 +30,8 @@
         }
 
         img {
-            max-width: 256px;
-            max-height: 256px;
+            max-width: 512px;
+            max-height: 512px;
             width: auto;
             height: auto;
         }
@@ -50,11 +50,12 @@
             for (var i = 0; i < messages.length; i++) {
                 const responseListItem = document.createElement('li');
                 const message = messages[i].message ? messages[i].message.replace(/\n/g, '<br>') : "";
-                const audio = "<audio autoplay hidden><source src='" + messages[i].audio + "' type='audio/mpeg'>Your browser does not support the audio element.</audio>";
                 if (messages[i].image) {
-                    responseListItem.innerHTML = "<div class='from-master'>" + messages[i].from + "</div>" + message + "<br>" + audio + "<img src='" + messages[i].image + "'>";
+                    responseListItem.innerHTML = "<img src='" + messages[i].image + "'>";
+                } else if (messages[i].audio) {
+                    responseListItem.innerHTML = "<audio autoplay hidden><source src='" + messages[i].audio + "' type='audio/mpeg'>Your browser does not support the audio element.</audio>";
                 } else {
-                    responseListItem.innerHTML = "<div class='from-master'>" + messages[i].from + "</div>" + message + "<br>" + audio;
+                    responseListItem.innerHTML = "<div class='from-master'>" + messages[i].from + "</div>" + message + "<br>";
                 }
                 messageList.appendChild(responseListItem);
             }
