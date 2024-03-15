@@ -29,6 +29,8 @@ namespace Game.Functions
 
                 CookieManager cookieManager = new CookieManager(req, response);
 
+                response.Cookies.Append("game_theme", req.Query["theme"] ?? "");
+
                 response.Body = stream;
                 response.Headers.Add("content-type", "text/html");
                 return response;
