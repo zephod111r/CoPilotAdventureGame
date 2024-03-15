@@ -5,6 +5,7 @@ using Game.Common.UI;
 using Game.RuleBook.Character;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System.Numerics;
 
 namespace Game.RuleBook
 {
@@ -18,6 +19,7 @@ namespace Game.RuleBook
     public class GameMaster(GameSettings gameSettings, IRuleBook ruleBook, IAIPlatform aIPlatform, IUserInterfaceManager userInterfaceManager, ILogger<GameMaster> logger) : IGameMaster
     {
         private const string DEFAULT_THEME = "Dungeons & Dragons";
+        private const string WELCOME_MESSAGE_PROMPT = "Generate a welcome message for the game. Introduce yourselves as a game master. Describe the world considering twhere he game theme and the purpose of the quest.";
 
         private static readonly string[] RULES = {
                 "Everything player picks up goes to the bag if capacity not exceeded.",
@@ -37,7 +39,7 @@ namespace Game.RuleBook
         private bool isGameStarted = false;
         private string welcomeMessage = "";
 
-        public async Task<UIMessage> StartGame()
+        public async Task<UIMessage[]> StartGame()
         {
             if (!isGameStarted)
             {
@@ -58,10 +60,14 @@ namespace Game.RuleBook
                 isGameStarted = true;
             }
 
-            return new UIMessage(UITargetWindow.Main, UIMessageType.Heading, welcomeMessage, gameMaster);
+            PlayerCharacter playerCharacter = gameState!.Players[gameState.CurrentPlayer];
+
+            return [new UIMessage(UITargetWindow.Main, UIMessageType.Heading, welcomeMessage, gameMaster),
+                    new UIMessage(UITargetWindow.Main, UIMessageType.Heading, $"You are {playerCharacter.Name}, who is a {playerCharacter.Class!.Name} of {playerCharacter.Race!.Name}. And here is how you look!", gameMaster),
+                    new UIMessage(UITargetWindow.Main, UIMessageType.Image, gameState!.Players[gameState.CurrentPlayer].Avatar!, gameMaster)];
         }
 
-        public async Task<UIMessage> ReplyToPlayer(string playerCommand)
+        public async Task<UIMessage[]> ReplyToPlayer(string playerCommand)
         {
             var context = new
             {
@@ -80,18 +86,11 @@ namespace Game.RuleBook
                     .WithHistory(history!)
                     .Build());
 
+            StoreHistory(query, response);
+
             string content = ParseReply(JsonConvert.DeserializeObject<GameMasterReply>(response.Content));
 
-            // dequeue elements while the size of the history queue greater than 25
-            while (history!.Count > 23)
-            {
-                history.Dequeue();
-            }
-
-            history.Enqueue(new KeyValuePair<MessageType, object>(MessageType.User, query));
-            history.Enqueue(new KeyValuePair<MessageType, object>(MessageType.Assistant, response.Content));
-
-            return new UIMessage(UITargetWindow.Main, UIMessageType.Heading, content, gameMaster);
+            return [new UIMessage(UITargetWindow.Main, UIMessageType.Heading, content, gameMaster)];
         }
 
         private async Task<PlayerCharacter> CreateCharacter(string location)
@@ -103,12 +102,10 @@ namespace Game.RuleBook
             userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.Normal, $"You selected a {clasz.Name} of {race.Name}", gameMaster));
 
             PlayerCharacter playerCharacter = await ruleBook.CreateCharacter(race, clasz);
-            userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.Heading,
-                $"You created the character named {playerCharacter.Name}, who is a {playerCharacter.Class!.Name} of {playerCharacter.Race!.Name} and looks like:", gameMaster));
-            userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.Normal, playerCharacter.Avatar ?? ""));
-
-            playerCharacter.Avatar = null;
             playerCharacter.Location = location;
+
+            userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.Heading,
+                    $"You created the character named {playerCharacter.Name}, who is a {playerCharacter.Class!.Name} of {playerCharacter.Race!.Name}", gameMaster));
 
             return playerCharacter;
         }
@@ -169,7 +166,7 @@ namespace Game.RuleBook
 
         private string GetWelcomeMessage()
         {
-            AIResponse response = platform.Query(AIRequestBuilder.ForText("Generate a welcome message for the game. Introduce yourselves as a game master. Describe the world considering twhere he game theme and the purpose of the quest.")
+            AIResponse response = platform.Query(AIRequestBuilder.ForText(WELCOME_MESSAGE_PROMPT)
                     .WithContext($"Your name is {gameMaster?.Name ?? "Mystery"}")
                     .Build())
                 .Result;
@@ -210,6 +207,18 @@ namespace Game.RuleBook
         private void UpdateInventory(Inventory newInventory)
         {
             gameState!.Players[gameState.CurrentPlayer].Inventory = newInventory;
+        }
+
+        private void StoreHistory(object query, AIResponse response)
+        {
+            // dequeue elements while the size of the history queue greater than 25
+            while (history!.Count > 23)
+            {
+                history.Dequeue();
+            }
+
+            history.Enqueue(new KeyValuePair<MessageType, object>(MessageType.User, query));
+            history.Enqueue(new KeyValuePair<MessageType, object>(MessageType.Assistant, response.Content));
         }
     }
 }

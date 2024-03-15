@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Game.Common.Rules;
 using Game.Common.UI;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 
 namespace Game.Functions
 {
@@ -42,13 +43,14 @@ namespace Game.Functions
             }
 
             IGameMaster gameMaster = context.InstanceServices.GetService(typeof(IGameMaster)) as IGameMaster;
-            UIMessage reply = await gameMaster.ReplyToPlayer(text);
+            UIMessage[] replyMessages = await gameMaster.ReplyToPlayer(text);
 
-            var replyJson = new Message
+            Message[] replyJson = replyMessages.Select(uiMessage => new Message
             {
-                message = reply.Content,
-                from = reply.From?.Name ?? "System",
-            };
+                message = uiMessage.Content,
+                from = uiMessage.From?.Name ?? "System",
+                image = uiMessage.Type == UIMessageType.Image ? uiMessage.Content : null
+            }).ToArray();
 
             HttpResponseData res;
             res = req.CreateResponse(System.Net.HttpStatusCode.OK);

@@ -15,8 +15,11 @@ namespace Game.TextUI
         {
             // string welcomeMessage = ruleBook.GetWelcomeMessage();
 
-            UIMessage welcomeMessage = gameMaster.StartGame().Result;
-            userInterfaceManager.DisplayMessage(welcomeMessage);
+            UIMessage[] welcomeMessage = gameMaster.StartGame().Result;
+            foreach (var message in welcomeMessage)
+            {
+                userInterfaceManager.DisplayMessage(message);
+            }
 
             while (true)
             {
@@ -27,8 +30,11 @@ namespace Game.TextUI
                     break;
                 }
 
-                UIMessage reply = gameMaster.ReplyToPlayer(command).Result;
-                userInterfaceManager.DisplayMessage(reply);
+                UIMessage[] reply = gameMaster.ReplyToPlayer(command).Result;
+                foreach (var message in reply)
+                {
+                    userInterfaceManager.DisplayMessage(message);
+                }
             }
         }
     }

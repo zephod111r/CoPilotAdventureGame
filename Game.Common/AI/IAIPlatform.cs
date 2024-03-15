@@ -80,6 +80,7 @@
 
     public interface IAIPlatform
     {
-        public Task<AIResponse> Query(AIRequest request);
+        Task<AIResponse> Query(AIRequest request);
+        Task<Uri> GenerateImage(AIRequest request);
     }
 }

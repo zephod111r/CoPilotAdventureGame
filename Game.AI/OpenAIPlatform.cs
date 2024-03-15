@@ -7,7 +7,8 @@ namespace Game.AI.OpenAI
 {
     public class OpenAIPlatform : IAIPlatform
     {
-        private const string MODEL_NAME = "gpt-3.5-turbo";
+        private const string TEXT_MODEL_NAME = "gpt-3.5-turbo";
+        private const string IMAGE_MODEL_NAME = "dall-e-3";
 
         private readonly ILogger<OpenAIPlatform> logger;
         private readonly OpenAIClient client;
@@ -25,7 +26,7 @@ namespace Game.AI.OpenAI
         {
             var chatCompletionsOptions = new ChatCompletionsOptions()
             {
-                DeploymentName = MODEL_NAME, // Use DeploymentName for "model" with non-Azure clients
+                DeploymentName = TEXT_MODEL_NAME, // Use DeploymentName for "model" with non-Azure clients
             };
 
             string context;
@@ -68,6 +69,22 @@ namespace Game.AI.OpenAI
                     logger.LogTrace($"OpenAI response: total={response.Result.Value.Usage.TotalTokens}, completion={response.Result.Value.Usage.CompletionTokens}, prompt={response.Result.Value.Usage.PromptTokens} ");
                     logger.LogTrace($"OpenAI response:\n{content}");
                     return new AIResponse(content);
+                });
+        }
+
+        public async Task<Uri> GenerateImage(AIRequest request)
+        {
+            var imageGenerationsOptions = new ImageGenerationOptions
+            {
+                DeploymentName = IMAGE_MODEL_NAME, 
+                ImageCount = 1,
+                Prompt = $"{request.Context}. {request.Query}",
+
+            };
+            return await client.GetImageGenerationsAsync(imageGenerationsOptions)
+                .ContinueWith(response =>
+                {
+                    return response.Result.Value.Data[0].Url;
                 });
         }
     }

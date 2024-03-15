@@ -39,6 +39,19 @@
     <input type="text" id="input-box" placeholder="Type your message...">
     <!-- Add JavaScript to handle input and message list -->
     <script>
+        function processMessages(messageList, messages) {
+            for (var i = 0; i < messages.length; i++) {
+                const responseListItem = document.createElement('li');
+                const message = messages[i].message ? messages[i].message.replace(/\n/g, '<br>') : "";
+                if (messages[i].image) {
+                    responseListItem.innerHTML = "<div class='from-master'>" + messages[i].from + "</div>" + message + "<img src='" + messages[i].image + "'>";
+                } else {
+                    responseListItem.innerHTML = "<div class='from-master'>" + messages[i].from + "</div>" + message;
+                }
+                messageList.appendChild(responseListItem);
+            }
+        }
+
         const inputBox = document.getElementById('input-box');
         const messageList = document.getElementById('message-list');
         var gameID = 0;
@@ -66,9 +79,7 @@
 
                         if (response.ok) {
                             const responseData = await response.json();
-                            const responseListItem = document.createElement('li');
-                            responseListItem.innerHTML = "<div class='from-master'>" + responseData.from + "</div>" + responseData.message.replace(/\n/g, '<br>');
-                            messageList.appendChild(responseListItem);
+                            processMessages(messageList, responseData);
                             console.log('Message sent successfully!');
                         } else {
                             console.error('Error sending message:', response.statusText);
@@ -94,12 +105,11 @@
 
                 if (response.ok) {
                     const responseData = await response.json();
-                    const responseListItem = document.createElement('li');
-                    responseListItem.innerHTML = "<div class='from-master'>" + responseData.from + "</div>" + responseData.message + responseData.message.replace(/\n/g, '<br>');
-                    messageList.appendChild(responseListItem);
+                    processMessages(messageList, responseData);
                     console.log('Message received successfully!');
                 } else {
                     console.error('Error sending message:', response.statusText);
+                    processMessages(messageList, [{ from: 'System', message: response.text }]);
                 }
             } catch (error) {
                 console.error('Network error:', error);

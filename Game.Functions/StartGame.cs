@@ -1,5 +1,3 @@
-
-using Game.Common.Manager;
 using Game.Common.Rules;
 using Game.Common.UI;
 using Microsoft.Azure.Functions.Worker;
@@ -7,6 +5,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -25,13 +24,14 @@ namespace Game.Functions
             try
             {
                 IGameMaster gameMaster = context.InstanceServices.GetService(typeof(IGameMaster)) as IGameMaster;
-                UIMessage welcomeMessage = await gameMaster.StartGame();
-                
-                var replyJson = new Message
+                UIMessage[] welcomeMessages = await gameMaster.StartGame();
+
+                Message[] replyJson = welcomeMessages.Select(welcomeMessage => new Message
                 {
                     message = welcomeMessage.Content,
                     from = welcomeMessage.From?.Name ?? "System",
-                };
+                    image = welcomeMessage.Type == UIMessageType.Image ? welcomeMessage.Content : null
+                }).ToArray(); ;
 
                 HttpResponseData res = null;
                 res = req.CreateResponse(HttpStatusCode.OK);
