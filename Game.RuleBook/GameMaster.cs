@@ -237,7 +237,7 @@ namespace Game.RuleBook
         private string GetSpeech(string content)
         {
             var speech = platform.GenerateAudio(AIRequestBuilder.ForText(content).Build()).Result;
-            var fileName = $"audio{content.GetHashCode()}.mp3";
+            var fileName = $"audio_{DateTimeOffset.Now.ToUnixTimeSeconds()}.mp3";
             var url = storage.Upload(fileName, speech).Result;
 
             return fileName;
