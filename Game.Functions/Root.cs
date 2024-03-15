@@ -26,7 +26,9 @@ namespace Game.Functions
                 Stream stream = await storage.LoadStatic("index.html");
                 
                 var response = req.CreateResponse(HttpStatusCode.OK);
-                response.Cookies.Append("game_theme", req.Query["theme"] ?? "");
+
+                CookieManager cookieManager = new CookieManager(req, response);
+
                 response.Body = stream;
                 response.Headers.Add("content-type", "text/html");
                 return response;

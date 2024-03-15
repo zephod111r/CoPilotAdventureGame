@@ -22,6 +22,7 @@ namespace Game.Functions
             if (filename == null)
             {
                 HttpResponseData responseBad = req.CreateResponse(System.Net.HttpStatusCode.BadRequest);
+                CookieManager cM = new CookieManager(req, responseBad);
                 responseBad.WriteString("Invalid name, you can pass a message through a query or body of your request");
                 return responseBad;
             }
@@ -29,8 +30,8 @@ namespace Game.Functions
             IStorage storage = context.InstanceServices.GetService(typeof(IStorage)) as IStorage;
             Stream stream = await storage.GetFile(filename);
 
-            HttpResponseData res;
-            res = req.CreateResponse(System.Net.HttpStatusCode.OK);
+            HttpResponseData res = req.CreateResponse(System.Net.HttpStatusCode.OK);
+            CookieManager cookieManager = new CookieManager(req, res);
             res.Headers.Add("content-type", "audio/mpeg");
             res.Body = stream;
             return res;

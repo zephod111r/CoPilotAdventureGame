@@ -36,8 +36,9 @@ namespace Game.Functions
                     audio = uiMessage.Type == UIMessageType.Audio ? $"/GetFile/{uiMessage.Content}" : null
                 }).ToArray(); ;
 
-                HttpResponseData res = null;
-                res = req.CreateResponse(HttpStatusCode.OK);
+                HttpResponseData res = req.CreateResponse(HttpStatusCode.OK);
+                CookieManager cookieManager = new CookieManager(req, res);
+
                 res.Headers.Add("content-type", "application/json");
                 res.WriteString(JsonConvert.SerializeObject(replyJson));
                 return res;
