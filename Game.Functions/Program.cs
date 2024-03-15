@@ -1,16 +1,16 @@
 using Game.AI;
 using Game.AI.OpenAI;
 using Game.Common.Configuration;
-using Game.Common.Manager;
 using Game.Common.Rules;
+using Game.Common.Storage;
 using Game.Common.UI;
 using Game.RuleBook;
 using Game.TextUI.UI;
+using Game.Storage.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Threading.Tasks;
 
 namespace Game.Functions
@@ -38,6 +38,7 @@ namespace Game.Functions
                 })
                 .AddSingleton<IAIPlatform, OpenAIPlatform>()
                 .AddSingleton<IAppConfiguration, HostedConfiguration>()
+                .AddSingleton<IStorage, AzureStorage>()
                 .AddSingleton<IRuleBook, RuleBook.RuleBook>()
                 .AddSingleton<IUserInterfaceManager, WebUserInterfaceManager>()
                 .AddSingleton<IGameMaster, GameMaster>()

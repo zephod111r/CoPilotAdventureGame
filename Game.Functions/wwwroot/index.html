@@ -67,7 +67,7 @@
                         if (response.ok) {
                             const responseData = await response.json();
                             const responseListItem = document.createElement('li');
-                            responseListItem.innerHTML = "<div class='from-master'>" + responseData.from + "</div>" + responseData.message;
+                            responseListItem.innerHTML = "<div class='from-master'>" + responseData.from + "</div>" + responseData.message.replace(/\n/g, '<br>');
                             messageList.appendChild(responseListItem);
                             console.log('Message sent successfully!');
                         } else {
@@ -95,7 +95,7 @@
                 if (response.ok) {
                     const responseData = await response.json();
                     const responseListItem = document.createElement('li');
-                    responseListItem.innerHTML = "<div class='from-master'>" + responseData.from + "</div>" + responseData.message;
+                    responseListItem.innerHTML = "<div class='from-master'>" + responseData.from + "</div>" + responseData.message + responseData.message.replace(/\n/g, '<br>');
                     messageList.appendChild(responseListItem);
                     console.log('Message received successfully!');
                 } else {
