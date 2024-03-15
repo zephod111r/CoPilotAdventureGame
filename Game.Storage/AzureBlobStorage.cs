@@ -68,6 +68,20 @@ namespace Game.Storage.Azure
             return null;
         }
 
+        public async Task<Stream> GetFile(string key)
+        {
+            await dynamicContainerClient.CreateIfNotExistsAsync();
+            BlobClient blob = dynamicContainerClient.GetBlobClient(key);
+            if (await blob.ExistsAsync())
+            {
+                MemoryStream stream = new MemoryStream();
+                await blob.DownloadToAsync(stream);
+                return stream;
+            }
+
+            return new MemoryStream();
+        }
+
         public async Task Save<T>(string key, T value)
         {
             await dynamicContainerClient.CreateIfNotExistsAsync();
