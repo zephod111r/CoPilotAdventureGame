@@ -9,6 +9,7 @@ namespace Game.AI.OpenAI
     {
         private const string TEXT_MODEL_NAME = "gpt-3.5-turbo";
         private const string IMAGE_MODEL_NAME = "dall-e-3";
+        private const string SPEECH_MODEL_NAME = "tts-1";
 
         private readonly ILogger<OpenAIPlatform> logger;
         private readonly OpenAIClient client;
@@ -79,7 +80,6 @@ namespace Game.AI.OpenAI
                 DeploymentName = IMAGE_MODEL_NAME, 
                 ImageCount = 1,
                 Prompt = $"{request.Context}. {request.Query}",
-
             };
 
             logger.LogTrace($"OpenAI request:\n Context: {request.Context}\n Query: {request.Query}");
@@ -89,6 +89,19 @@ namespace Game.AI.OpenAI
                 {
                     return response.Result.Value.Data[0].Url;
                 });
+        }
+
+        public async Task<Stream> GenerateAudio(AIRequest request)
+        {
+            var audioGenerationsOptions = new SpeechGenerationOptions
+            {
+                DeploymentName = SPEECH_MODEL_NAME,
+                Voice = "onyx",
+                Input = request.Query.ToString(),
+            };
+
+           return await client.GenerateSpeechFromTextAsync(audioGenerationsOptions)
+                .ContinueWith(response => response.Result.Value.ToStream());
         }
     }
 }

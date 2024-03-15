@@ -1,6 +1,7 @@
 ﻿using Game.AI;
 using Game.Common.Character;
 using Game.Common.Rules;
+using Game.Common.Storage;
 using Game.Common.UI;
 using Game.RuleBook.Character;
 using Microsoft.Extensions.Logging;
@@ -16,7 +17,7 @@ namespace Game.RuleBook
         public Inventory? inventory { get; set; }
     }
 
-    public class GameMaster(GameSettings gameSettings, IRuleBook ruleBook, IAIPlatform aIPlatform, IUserInterfaceManager userInterfaceManager, ILogger<GameMaster> logger) : IGameMaster
+    public class GameMaster(GameSettings gameSettings, IRuleBook ruleBook, IAIPlatform aIPlatform, IUserInterfaceManager userInterfaceManager, IStorage storage, ILogger<GameMaster> logger) : IGameMaster
     {
         private const string DEFAULT_THEME = "Dungeons & Dragons";
         private const string WELCOME_MESSAGE_PROMPT = "Generate a welcome message for the game. Introduce yourselves as a game master. Describe the world considering twhere he game theme and the purpose of the quest.";
@@ -32,6 +33,7 @@ namespace Game.RuleBook
         private readonly IRuleBook ruleBook = ruleBook;
         private readonly IAIPlatform platform = aIPlatform;
         private readonly IUserInterfaceManager userInterfaceManager = userInterfaceManager;
+        private readonly IStorage storage = storage;
 
         private PlayerCharacter? gameMaster;
         private GameState? gameState;
@@ -90,14 +92,18 @@ namespace Game.RuleBook
 
             string content = ParseReply(JsonConvert.DeserializeObject<GameMasterReply>(response.Content));
 
-            if (playerCommand.Contains("look"))
+            string speechUrl = GetSpeech(content);
+
+            if (playerCommand.ToLower().Contains("look"))
             {
                 var imageUrl = await ruleBook.GetImage(content);
                 return [new UIMessage(UITargetWindow.Main, UIMessageType.Heading, content, gameMaster),
+                        new UIMessage(UITargetWindow.Main, UIMessageType.Heading, speechUrl, gameMaster),
                         new UIMessage(UITargetWindow.Main, UIMessageType.Image, imageUrl, gameMaster)];
             }
 
-            return [new UIMessage(UITargetWindow.Main, UIMessageType.Heading, content, gameMaster)];
+            return [new UIMessage(UITargetWindow.Main, UIMessageType.Heading, content, gameMaster),
+                    new UIMessage(UITargetWindow.Main, UIMessageType.Heading, speechUrl, gameMaster)];
         }
 
         private async Task<PlayerCharacter> CreateCharacter(string location)
@@ -226,6 +232,14 @@ namespace Game.RuleBook
 
             history.Enqueue(new KeyValuePair<MessageType, object>(MessageType.User, query));
             history.Enqueue(new KeyValuePair<MessageType, object>(MessageType.Assistant, response.Content));
+        }
+
+        private string GetSpeech(string content)
+        {
+            var speech = platform.GenerateAudio(AIRequestBuilder.ForText(content).Build()).Result;
+            storage.Save(content, speech);
+
+            return 
         }
     }
 }

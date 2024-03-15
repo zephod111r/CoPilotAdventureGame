@@ -82,5 +82,6 @@
     {
         Task<AIResponse> Query(AIRequest request);
         Task<Uri> GenerateImage(AIRequest request);
+        Task<Stream> GenerateAudio(AIRequest request);
     }
 }
