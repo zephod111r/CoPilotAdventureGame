@@ -28,7 +28,6 @@
         .from_player {
             color: #FF0000;
         }
-
         img {
             max-width: 512px;
             max-height: 512px;
@@ -101,8 +100,10 @@
         });
 
         const startGame = async () => {
+            var themeCookie = document.cookie.replace(/(?:(?:^|.*;\s*)game_theme\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+
             // Start a game
-            const url = '/StartGame'; // Update with your API endpoint
+            const url = '/StartGame?theme=' + themeCookie;
 
             try {
                 const response = await fetch(url, {

@@ -7,7 +7,7 @@ namespace Game.Common.Rules
     {
         Task<NameDescription[]> GetRaces();
         Task<NameDescription[]> GetClasses(string race);
-        Task<PlayerCharacter> CreateCharacter(NameDescription race, NameDescription clasz);
+        Task<PlayerCharacter> CreateCharacter(NameDescription race, NameDescription clasz, bool withAvatar);
         Task<GameMap?> CreateMap(int width, int height);
         Task<string> GetGameMasterName();
         Task<string> GetImage(string query);

@@ -53,7 +53,7 @@ namespace Game.RuleBook
                 .ContinueWith(action => Util.ConvertJsonToList<NameDescription>(action.Result.Content, "result"));
         }
 
-        public async Task<PlayerCharacter> CreateCharacter(NameDescription race, NameDescription clasz)
+        public async Task<PlayerCharacter> CreateCharacter(NameDescription race, NameDescription clasz, bool withAvatar)
         {
             string[] results = await Task.WhenAll(
                 platform.Query(AIRequestBuilder.ForJson(GetPrompt(string.Format(CHARACTER_NAME_PROMPT, race.Name, race.Description, clasz.Name, clasz.Description), TEXT_FORMAT)).WithContext(gameContext).Build())
@@ -64,8 +64,10 @@ namespace Game.RuleBook
                         .ContinueWith(action => action.Result.Content),
                 platform.Query(AIRequestBuilder.ForJson(GetPrompt(string.Format(INVENTORY_PROMPT, clasz.Name, clasz.Description, race.Name, race.Description), INVENTORY_FORMAT)).WithContext(gameContext).Build())
                         .ContinueWith(action => action.Result.Content),
-                platform.GenerateImage(AIRequestBuilder.ForText(string.Format(CHARACTER_IMAGE_PROMPT, race.Name, race.Description, clasz.Name, clasz.Description)).WithContext($"{GAME_CONTEXT}. Theme of the game is {gameSettings.Theme}").Build())
+                withAvatar 
+                    ? platform.GenerateImage(AIRequestBuilder.ForText(string.Format(CHARACTER_IMAGE_PROMPT, race.Name, race.Description, clasz.Name, clasz.Description)).WithContext($"{GAME_CONTEXT}. Theme of the game is {gameSettings.Theme}").Build())
                         .ContinueWith(action => action.Result.AbsoluteUri.ToString())
+                    : Task.FromResult("")
             );
 
             string name = Util.ConvertJsonToValue(results[0], "message");

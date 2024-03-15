@@ -1,6 +1,5 @@
 using Game.Common.Rules;
 using Game.Common.UI;
-using Google.Protobuf;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
@@ -24,8 +23,10 @@ namespace Game.Functions
             // parse query parameter
             try
             {
+                String theme = req.Query["theme"] ?? "";
+
                 IGameMaster gameMaster = context.InstanceServices.GetService(typeof(IGameMaster)) as IGameMaster;
-                UIMessage[] welcomeMessages = await gameMaster.StartGame();
+                UIMessage[] welcomeMessages = await gameMaster.StartGame(theme);
 
                 Message[] replyJson = welcomeMessages.Select(uiMessage => new Message
                 {

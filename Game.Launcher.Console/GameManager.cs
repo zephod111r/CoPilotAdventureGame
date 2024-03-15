@@ -15,7 +15,9 @@ namespace Game.TextUI
         {
             // string welcomeMessage = ruleBook.GetWelcomeMessage();
 
-            UIMessage[] welcomeMessage = gameMaster.StartGame().Result;
+            string theme = userInterfaceManager.GetInput(new UIMessage(UITargetWindow.Main, UIMessageType.Prompt, "Choose a theme for the game, or skip to use default"));
+
+            UIMessage[] welcomeMessage = gameMaster.StartGame(theme).Result;
             foreach (var message in welcomeMessage)
             {
                 userInterfaceManager.DisplayMessage(message);

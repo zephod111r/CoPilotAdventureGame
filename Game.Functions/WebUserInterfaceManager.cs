@@ -6,6 +6,8 @@ namespace Game.TextUI.UI
 {
     internal class WebUserInterfaceManager : IUserInterfaceManager
     {
+        public UICapabilities Capabilities => new UICapabilities(true, true);
+
         public void DisplayMessage(UIMessage message)
         {
             if (message.From != null)

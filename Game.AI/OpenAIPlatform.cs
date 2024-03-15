@@ -1,5 +1,5 @@
 ﻿using Azure.AI.OpenAI;
-using Game.Common.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
@@ -10,17 +10,18 @@ namespace Game.AI.OpenAI
         private const string TEXT_MODEL_NAME = "gpt-3.5-turbo";
         private const string IMAGE_MODEL_NAME = "dall-e-3";
         private const string SPEECH_MODEL_NAME = "tts-1";
+        private const string OPENAI_API_KEY_PARAMETER = "OpenAIKey";
 
         private readonly ILogger<OpenAIPlatform> logger;
         private readonly OpenAIClient client;
 
-        public OpenAIPlatform(IAppConfiguration configuration, ILogger<OpenAIPlatform> logger)
+        public OpenAIPlatform(IConfiguration configuration, ILogger<OpenAIPlatform> logger)
         {
             this.logger = logger;
 
             // Initialize OpenAI
             this.logger.LogDebug("Initializing OpenAI");
-            client = new OpenAIClient(configuration.Get(ConfigurationParameter.OpenAIKey));
+            client = new OpenAIClient(configuration[OPENAI_API_KEY_PARAMETER]);
         }
 
         public async Task<AIResponse> Query(AIRequest request)
@@ -77,7 +78,7 @@ namespace Game.AI.OpenAI
         {
             var imageGenerationsOptions = new ImageGenerationOptions
             {
-                DeploymentName = IMAGE_MODEL_NAME, 
+                DeploymentName = IMAGE_MODEL_NAME,
                 ImageCount = 1,
                 Prompt = $"{request.Context}. {request.Query}",
             };
@@ -100,8 +101,8 @@ namespace Game.AI.OpenAI
                 Input = request.Query.ToString(),
             };
 
-           return await client.GenerateSpeechFromTextAsync(audioGenerationsOptions)
-                .ContinueWith(response => response.Result.Value.ToArray());
+            return await client.GenerateSpeechFromTextAsync(audioGenerationsOptions)
+                 .ContinueWith(response => response.Result.Value.ToArray());
         }
     }
 }

@@ -11,19 +11,6 @@ namespace Game.Functions
 {
     public static class Root
     {
-        static string root()
-        {
-            DirectoryInfo info = new DirectoryInfo(".");
-            foreach (var item in info.EnumerateDirectories())
-            {
-                if (item.Name == "wwwroot")
-                {
-                    return item.FullName;
-                }
-            };
-            return ".";
-        }
-
         [Function(nameof(Root))]
         public static async Task<HttpResponseData> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "/")] HttpRequestData req,
@@ -34,16 +21,12 @@ namespace Game.Functions
            
             IStorage storage = context.InstanceServices.GetService(typeof(IStorage)) as IStorage;
 
-            string nameOfRoot = root();
-            string path = string.Concat(@nameOfRoot, @"\index.html");
-
             try
             {
-                //FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read);
-
                 Stream stream = await storage.LoadStatic("index.html");
                 
                 var response = req.CreateResponse(HttpStatusCode.OK);
+                response.Cookies.Append("game_theme", req.Query["theme"] ?? "");
                 response.Body = stream;
                 response.Headers.Add("content-type", "text/html");
                 return response;

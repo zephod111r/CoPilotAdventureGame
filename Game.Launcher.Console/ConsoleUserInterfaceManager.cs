@@ -1,10 +1,12 @@
 using Game.Common.Character;
 using Game.Common.UI;
 
-namespace Game.TextUI.UI
+namespace Game.TextUI
 {
     internal class ConsoleUserInterfaceManager : IUserInterfaceManager
     {
+        public UICapabilities Capabilities => new UICapabilities(false, false);
+
         public void DisplayMessage(UIMessage message)
         {
             if (message.From != null)
@@ -22,6 +24,7 @@ namespace Game.TextUI.UI
                         break;
                 }
                 Console.Write(message.From.Name);
+                Console.ResetColor();
                 Console.Write(": ");
             }
 
@@ -30,30 +33,25 @@ namespace Game.TextUI.UI
                 case UIMessageType.Heading:
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine(message.Content);
-                    Console.ResetColor();
                     break;
                 case UIMessageType.ListItemTitle:
                     Console.ForegroundColor = ConsoleColor.Magenta;
                     Console.WriteLine(message.Content);
-                    Console.ResetColor();
                     break;
                 case UIMessageType.ListItem:
                     Console.ForegroundColor = ConsoleColor.DarkGreen;
                     Console.WriteLine(message.Content);
-                    Console.ResetColor();
                     break;
                 case UIMessageType.Prompt:
                     Console.ForegroundColor = ConsoleColor.Cyan;
                     Console.Write(message.Content);
                     Console.Write(": ");
-                    Console.ResetColor();
                     break;
                 case UIMessageType.Normal:
                     Console.WriteLine(message.Content);
                     break;
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
+            Console.ResetColor();
         }
 
         public string GetInput(UIMessage? prompt = null)

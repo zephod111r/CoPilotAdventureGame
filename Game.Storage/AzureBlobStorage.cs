@@ -10,6 +10,8 @@ namespace Game.Storage.Azure
 
     public class AzureBlobStorage : IStorage
     {
+        private IConfiguration configuration;
+
         public Stream ObjectToStream<T>(T obj)
         {
             var memoryStream = new MemoryStream();
@@ -37,11 +39,13 @@ namespace Game.Storage.Azure
 
         public AzureBlobStorage(IConfiguration configuration)
         {
+            this.configuration = configuration;
+
             string? connectionString = configuration["AzureWebJobsStorage"];
 
             if (connectionString == null)
             {
-                throw new System.Exception("AzureWebJobsStorage is not set");
+                throw new Exception("AzureWebJobsStorage is not set");
             }
 
             blobServiceClient = new BlobServiceClient(connectionString);
@@ -104,6 +108,20 @@ namespace Game.Storage.Azure
 
         public async Task<Stream?> LoadStatic(string key)
         {
+            if (configuration["StaticFiles"] == "local")
+            {
+                DirectoryInfo info = new DirectoryInfo(".");
+                foreach (var item in info.EnumerateDirectories())
+                {
+                    if (item.Name == "wwwroot")
+                    {
+                        string path = $"{item.FullName}\\{key}";
+                        return new FileStream(path, FileMode.Open, FileAccess.Read);
+                    }
+                };
+                
+                return  new MemoryStream();
+            }
             await staticContainerClient.CreateIfNotExistsAsync();
             BlobClient blob = staticContainerClient.GetBlobClient(key);
             return await blob.OpenReadAsync();

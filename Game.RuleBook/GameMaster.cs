@@ -6,7 +6,6 @@ using Game.Common.UI;
 using Game.RuleBook.Character;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System.Numerics;
 
 namespace Game.RuleBook
 {
@@ -41,24 +40,27 @@ namespace Game.RuleBook
         private bool isGameStarted = false;
         private string welcomeMessage = "";
 
-        public async Task<UIMessage[]> StartGame()
+        public async Task<UIMessage[]> StartGame(string theme)
         {
             if (!isGameStarted)
             {
-                string theme = userInterfaceManager.GetInput(new UIMessage(UITargetWindow.Main, UIMessageType.Prompt, $"Choose a theme for the game, or skip to use the \"{DEFAULT_THEME}\""));
                 gameSettings.Theme = string.IsNullOrEmpty(theme) ? DEFAULT_THEME : theme;
 
                 var map = CreateMap();
                 var startLocation = map.Locations!.First().Value;
 
-                var player = await CreateCharacter(startLocation.Name);
+                dynamic[] results = await Task.WhenAll(
+                    CreateCharacter(startLocation.Name).ContinueWith(response => (object)response.Result),
+                    GetWelcomeMessage().ContinueWith(response => (object)response.Result));
+
+                PlayerCharacter player = results[0];
+                welcomeMessage = results[1];
 
                 gameState = new GameState(map, [player]);
                 gameState.CurrentPlayer = 0;
 
                 gameMaster = new PlayerCharacter(ruleBook.GetGameMasterName().Result, null, null, null, PlayerType.GameMaster, [], new Inventory());
-            
-                welcomeMessage = GetWelcomeMessage();
+
                 isGameStarted = true;
             }
 
@@ -91,19 +93,30 @@ namespace Game.RuleBook
             StoreHistory(query, response);
 
             string content = ParseReply(JsonConvert.DeserializeObject<GameMasterReply>(response.Content));
+            var replyMessage = new UIMessage(UITargetWindow.Main, UIMessageType.Heading, content, gameMaster);
 
-            string speechUrl = GetSpeech(content);
-
-            if (playerCommand.ToLower().Contains("look"))
+            if (userInterfaceManager.Capabilities.CanPlayAudio && userInterfaceManager.Capabilities.CanDisplayImages)
             {
-                var imageUrl = await ruleBook.GetImage(content);
-                return [new UIMessage(UITargetWindow.Main, UIMessageType.Heading, content, gameMaster),
-                        new UIMessage(UITargetWindow.Main, UIMessageType.Audio, speechUrl, gameMaster),
-                        new UIMessage(UITargetWindow.Main, UIMessageType.Image, imageUrl, gameMaster)];
+                if (playerCommand.ToLower().Contains("look"))
+                {
+                    string[] results = await Task.WhenAll(
+                        GetSpeech(content),
+                        ruleBook.GetImage(content));
+
+                    return [replyMessage,
+                            new UIMessage(UITargetWindow.Main, UIMessageType.Audio, results[0], gameMaster),
+                            new UIMessage(UITargetWindow.Main, UIMessageType.Image, results[1], gameMaster)];
+                }
+                else
+                {
+                    string imageUrl = await GetSpeech(content);
+
+                    return [replyMessage,
+                            new UIMessage(UITargetWindow.Main, UIMessageType.Audio, imageUrl, gameMaster)];
+                }
             }
 
-            return [new UIMessage(UITargetWindow.Main, UIMessageType.Heading, content, gameMaster),
-                    new UIMessage(UITargetWindow.Main, UIMessageType.Audio, speechUrl, gameMaster)];
+            return [replyMessage];
         }
 
         private async Task<PlayerCharacter> CreateCharacter(string location)
@@ -114,7 +127,7 @@ namespace Game.RuleBook
             NameDescription clasz = GetClass(race);
             userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.Normal, $"You selected a {clasz.Name} of {race.Name}", gameMaster));
 
-            PlayerCharacter playerCharacter = await ruleBook.CreateCharacter(race, clasz);
+            PlayerCharacter playerCharacter = await ruleBook.CreateCharacter(race, clasz, userInterfaceManager.Capabilities.CanDisplayImages);
             playerCharacter.Location = location;
 
             userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.Heading,
@@ -177,13 +190,12 @@ namespace Game.RuleBook
             return map;
         }
 
-        private string GetWelcomeMessage()
+        private async Task<string> GetWelcomeMessage()
         {
-            AIResponse response = platform.Query(AIRequestBuilder.ForText(WELCOME_MESSAGE_PROMPT)
+            return await platform.Query(AIRequestBuilder.ForText(WELCOME_MESSAGE_PROMPT)
                     .WithContext($"Your name is {gameMaster?.Name ?? "Mystery"}")
                     .Build())
-                .Result;
-            return response.Content;
+                .ContinueWith(response => response.Result.Content);
         }
 
         private string ParseReply(GameMasterReply? content)
@@ -234,13 +246,16 @@ namespace Game.RuleBook
             history.Enqueue(new KeyValuePair<MessageType, object>(MessageType.Assistant, response.Content));
         }
 
-        private string GetSpeech(string content)
+        private async Task<string> GetSpeech(string content)
         {
-            var speech = platform.GenerateAudio(AIRequestBuilder.ForText(content).Build()).Result;
-            var fileName = $"audio_{DateTimeOffset.Now.ToUnixTimeSeconds()}.mp3";
-            var url = storage.Upload(fileName, speech).Result;
+            string fileName = $"audio_{DateTimeOffset.Now.ToUnixTimeSeconds()}.mp3";
 
-            return fileName;
+            return await platform.GenerateAudio(AIRequestBuilder.ForText(content).Build())
+                .ContinueWith(response =>
+                {
+                    storage.Upload(fileName, response.Result);
+                    return fileName;
+                });
         }
     }
 }
