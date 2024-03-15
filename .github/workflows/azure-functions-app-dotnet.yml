@@ -38,6 +38,7 @@ jobs:
           container_name: 'copilotadvgame-static'
           connection_string: ${{ secrets.ConnectionString }}
           sync: 'true'
+          
   build-and-deploy:
     runs-on: windows-latest # For Linux, use ubuntu-latest
     environment: dev
