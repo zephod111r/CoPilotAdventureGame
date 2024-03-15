@@ -16,6 +16,7 @@ namespace Game.Common.UI
         ListItem,
         Normal,
         Image,
+        Audio
     }
 
     public class UIMessage(UITargetWindow targetWindow, UIMessageType type, string content, PlayerCharacter? from = null)

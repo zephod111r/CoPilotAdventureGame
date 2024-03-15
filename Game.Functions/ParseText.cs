@@ -49,7 +49,8 @@ namespace Game.Functions
             {
                 message = uiMessage.Type != UIMessageType.Image ? uiMessage.Content : null,
                 from = uiMessage.From?.Name ?? "System",
-                image = uiMessage.Type == UIMessageType.Image ? uiMessage.Content : null
+                image = uiMessage.Type == UIMessageType.Image ? uiMessage.Content : null,
+                audio = uiMessage.Type == UIMessageType.Audio ? uiMessage.Content : null
             }).ToArray();
 
             HttpResponseData res;

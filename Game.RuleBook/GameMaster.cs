@@ -237,9 +237,9 @@ namespace Game.RuleBook
         private string GetSpeech(string content)
         {
             var speech = platform.GenerateAudio(AIRequestBuilder.ForText(content).Build()).Result;
-            storage.Save(content, speech);
+            var url = storage.Save(content, speech);
 
-            return 
+            return url;
         }
     }
 }

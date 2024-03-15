@@ -91,7 +91,7 @@ namespace Game.AI.OpenAI
                 });
         }
 
-        public async Task<Stream> GenerateAudio(AIRequest request)
+        public async Task<byte[]> GenerateAudio(AIRequest request)
         {
             var audioGenerationsOptions = new SpeechGenerationOptions
             {
@@ -101,7 +101,7 @@ namespace Game.AI.OpenAI
             };
 
            return await client.GenerateSpeechFromTextAsync(audioGenerationsOptions)
-                .ContinueWith(response => response.Result.Value.ToStream());
+                .ContinueWith(response => response.Result.Value.ToArray());
         }
     }
 }
