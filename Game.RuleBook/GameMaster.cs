@@ -65,7 +65,7 @@ namespace Game.RuleBook
             PlayerCharacter playerCharacter = gameState!.Players[gameState.CurrentPlayer];
 
             return [new UIMessage(UITargetWindow.Main, UIMessageType.Heading, welcomeMessage, gameMaster),
-                    new UIMessage(UITargetWindow.Main, UIMessageType.Heading, $"You are {playerCharacter.Name}, who is a {playerCharacter.Class!.Name} of {playerCharacter.Race!.Name}. And here is how you look!", gameMaster),
+                    new UIMessage(UITargetWindow.Main, UIMessageType.Heading, $"You are {playerCharacter.Name}, who is a {playerCharacter.Race!.Name} of {playerCharacter.Class!.Name}. And here is how you look!", gameMaster),
                     new UIMessage(UITargetWindow.Main, UIMessageType.Image, gameState!.Players[gameState.CurrentPlayer].Avatar!, gameMaster)];
         }
 
@@ -92,13 +92,13 @@ namespace Game.RuleBook
 
             string content = ParseReply(JsonConvert.DeserializeObject<GameMasterReply>(response.Content));
 
-            string speechUrl = GetSpeech(content);
+            string speechUrl = GetSpeech(content).AbsoluteUri;
 
             if (playerCommand.ToLower().Contains("look"))
             {
                 var imageUrl = await ruleBook.GetImage(content);
                 return [new UIMessage(UITargetWindow.Main, UIMessageType.Heading, content, gameMaster),
-                        new UIMessage(UITargetWindow.Main, UIMessageType.Heading, speechUrl, gameMaster),
+                        new UIMessage(UITargetWindow.Main, UIMessageType.Audio, speechUrl, gameMaster),
                         new UIMessage(UITargetWindow.Main, UIMessageType.Image, imageUrl, gameMaster)];
             }
 
@@ -118,7 +118,7 @@ namespace Game.RuleBook
             playerCharacter.Location = location;
 
             userInterfaceManager.DisplayMessage(new UIMessage(UITargetWindow.Main, UIMessageType.Heading,
-                    $"You created the character named {playerCharacter.Name}, who is a {playerCharacter.Class!.Name} of {playerCharacter.Race!.Name}", gameMaster));
+                    $"You created the character named {playerCharacter.Name}, who is a {playerCharacter.Race!.Name} or {playerCharacter.Class!.Name}", gameMaster));
 
             return playerCharacter;
         }
@@ -234,10 +234,10 @@ namespace Game.RuleBook
             history.Enqueue(new KeyValuePair<MessageType, object>(MessageType.Assistant, response.Content));
         }
 
-        private string GetSpeech(string content)
+        private Uri? GetSpeech(string content)
         {
             var speech = platform.GenerateAudio(AIRequestBuilder.ForText(content).Build()).Result;
-            var url = storage.Save(content, speech);
+            var url = storage.Upload($"audio{content.GetHashCode()}.mp3", speech).Result;
 
             return url;
         }

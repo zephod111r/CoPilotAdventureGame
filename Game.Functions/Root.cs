@@ -39,9 +39,9 @@ namespace Game.Functions
 
             try
             {
-                //FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read);
+                FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read);
 
-                Stream stream = await storage.LoadStatic("index.html");
+                //Stream stream = await storage.LoadStatic("index.html");
                 
                 var response = req.CreateResponse(HttpStatusCode.OK);
                 response.Body = stream;

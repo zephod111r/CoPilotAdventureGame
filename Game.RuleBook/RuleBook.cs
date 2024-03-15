@@ -15,9 +15,9 @@ namespace Game.RuleBook
         private const string PROMPT_GET_CLASSES = "Return the list of classes a player can choose from when creating its character for the race {0}.";
 
         private const string CHARACTER_NAME_PROMPT = "Generate a name of the character of race {0} ({1}) and class {2} ({3}).";
-        private const string CHARACTER_IMAGE_PROMPT = "Generate an avatar image of the character of race {0} ({1}) and class {2} ({3}). The image must contain ncharacter only without any UI elements.";
+        private const string CHARACTER_IMAGE_PROMPT = "Generate an avatar image of the character of race {0} ({1}) and class {2} ({3}). The image must contain ncharacter only UI.";
 
-        private const string ABILITIES_PROMPT = "Generate a list of abilities of the character with random values but adjusted to the class {0} ({1}) and race {2} ({3}).";
+        private const string ABILITIES_PROMPT = "Generate a list of abilities of the character with random values but adjusted to race {2} ({3}) anf class {0} ({1})";
         private const string ABILITIES_FORMAT = "JSON object with ability name as a key and an integer value";
 
         private const string INVENTORY_PROMPT = "Generate the initial inventory and wallet contents for the character of race {0} ({1}) and class {2} ({3})";

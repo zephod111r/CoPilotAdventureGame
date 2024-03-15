@@ -49,7 +49,7 @@ namespace Game.Storage.Azure
             dynamicContainerClient = blobServiceClient.GetBlobContainerClient("copilotadvgame-dynamic");
         }
         
-        public async Task<Uri?> Upload<T>(string key, byte[] value)
+        public async Task<Uri?> Upload(string key, byte[] value)
         {
             await dynamicContainerClient.CreateIfNotExistsAsync();
             await dynamicContainerClient.UploadBlobAsync(key, new MemoryStream(value));

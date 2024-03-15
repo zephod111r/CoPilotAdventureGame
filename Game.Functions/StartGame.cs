@@ -1,5 +1,6 @@
 using Game.Common.Rules;
 using Game.Common.UI;
+using Google.Protobuf;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
@@ -26,11 +27,12 @@ namespace Game.Functions
                 IGameMaster gameMaster = context.InstanceServices.GetService(typeof(IGameMaster)) as IGameMaster;
                 UIMessage[] welcomeMessages = await gameMaster.StartGame();
 
-                Message[] replyJson = welcomeMessages.Select(welcomeMessage => new Message
+                Message[] replyJson = welcomeMessages.Select(uiMessage => new Message
                 {
-                    message = welcomeMessage.Type != UIMessageType.Image ? welcomeMessage.Content : null,
-                    from = welcomeMessage.From?.Name ?? "System",
-                    image = welcomeMessage.Type == UIMessageType.Image ? welcomeMessage.Content : null
+                    message = uiMessage.Type != UIMessageType.Image && uiMessage.Type != UIMessageType.Audio ? uiMessage.Content : null,
+                    from = uiMessage.From?.Name ?? "System",
+                    image = uiMessage.Type == UIMessageType.Image ? uiMessage.Content : null,
+                    audio = uiMessage.Type == UIMessageType.Audio ? uiMessage.Content : null
                 }).ToArray(); ;
 
                 HttpResponseData res = null;
