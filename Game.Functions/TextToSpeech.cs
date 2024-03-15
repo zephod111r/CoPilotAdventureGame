@@ -58,8 +58,8 @@ namespace Game.Functions
             */
 
 
-            HttpResponseData res;
-            res = req.CreateResponse(System.Net.HttpStatusCode.OK);
+            HttpResponseData res = req.CreateResponse(System.Net.HttpStatusCode.OK);
+            CookieManager cookieManager = new CookieManager(req, res);
             return res;
 
         }

@@ -44,6 +44,9 @@ namespace Game.Functions
                 Stream stream = await storage.LoadStatic("index.html");
                 
                 var response = req.CreateResponse(HttpStatusCode.OK);
+
+                CookieManager cookieManager = new CookieManager(req, response);
+
                 response.Body = stream;
                 response.Headers.Add("content-type", "text/html");
                 return response;

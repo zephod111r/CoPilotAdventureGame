@@ -21,7 +21,8 @@ namespace Game.Functions
 
         [Function(nameof(ParseText))]
         public async Task<HttpResponseData> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = nameof(ParseText))] HttpRequestData req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = nameof(ParseText))] 
+            HttpRequestData req,
             [FromBody] Message bodyText,
             FunctionContext context)
         {
@@ -42,6 +43,12 @@ namespace Game.Functions
                 return responseBad;
             }
 
+
+            HttpResponseData res;
+            res = req.CreateResponse(System.Net.HttpStatusCode.OK);
+
+            CookieManager cookieManager = new CookieManager(req, res);
+
             IGameMaster gameMaster = context.InstanceServices.GetService(typeof(IGameMaster)) as IGameMaster;
             UIMessage[] replyMessages = await gameMaster.ReplyToPlayer(text);
 
@@ -53,8 +60,7 @@ namespace Game.Functions
                 audio = uiMessage.Type == UIMessageType.Audio ? $"/GetFile/{uiMessage.Content}" : null
             }).ToArray();
 
-            HttpResponseData res;
-            res = req.CreateResponse(System.Net.HttpStatusCode.OK);
+
             res.WriteString(JsonConvert.SerializeObject(replyJson));
             return res;
 
