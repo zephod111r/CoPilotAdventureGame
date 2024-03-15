@@ -38,7 +38,7 @@ namespace Game.Functions
                 })
                 .AddSingleton<IAIPlatform, OpenAIPlatform>()
                 .AddSingleton<IAppConfiguration, HostedConfiguration>()
-                .AddSingleton<IStorage, AzureStorage>()
+                .AddSingleton<IStorage, AzureBlobStorage>()
                 .AddSingleton<IRuleBook, RuleBook.RuleBook>()
                 .AddSingleton<IUserInterfaceManager, WebUserInterfaceManager>()
                 .AddSingleton<IGameMaster, GameMaster>()
