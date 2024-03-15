@@ -28,6 +28,16 @@ env:
   DOTNET_VERSION: '8.0.x'                   # set this to the dotnet version to use (e.g. '2.1.x', '3.1.x', '5.0.x')
 
 jobs:
+  upload:
+    runs-on: windows-latest # For Linux, use ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: bacongobbler/azure-blob-storage-upload@main
+        with:
+          source_dir: 'Game.Functions/wwwroot'
+          container_name: 'copilotadvgame-static'
+          connection_string: ${{ secrets.ConnectionString }}
+          sync: 'true'
   build-and-deploy:
     runs-on: windows-latest # For Linux, use ubuntu-latest
     environment: dev
