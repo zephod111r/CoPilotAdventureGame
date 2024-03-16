@@ -21,16 +21,16 @@ Setting `StaticFiles` to `local` will use the local static files. Otherwise it w
 
 ### Console version
 
-Run with the command:
-```
-dotnet run --project Game.Launcher.Console
-```
+- Run with the command:
+    ```
+    dotnet run --project Game.Launcher.Console
+    ```
+- Press 'Ctrl + C' or type command `exit` to exit the game.
 
-Press 'Ctrl + C' or type command `exit` to exit the game.
+### Local Web version
 
-### Web version
-Open in browser:
-- Local dev version: http://localhost:7071/
-- Deployed version: https://copilotadvgamefunctions.azurewebsites.net/
-
-You can add a query parameter `?theme=<game theme>` to the URL to change the game theme e.g. https://copilotadvgamefunctions.azurewebsites.net/?theme=StarWars
+- Run locally with the command:
+    ```
+    dotnet run --project Game.Functions
+    ```
+- Open in browser http://localhost:7071/
